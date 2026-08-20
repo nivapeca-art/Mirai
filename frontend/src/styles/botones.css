@@ -1,0 +1,24 @@
+.button {
+  border: none;
+  border-radius: 8px;
+  padding: 12px 18px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button--primary {
+  background: #234e70;
+  color: white;
+}
+
+.button--primary:hover:not(:disabled) {
+  background: #1b3e59;
+}

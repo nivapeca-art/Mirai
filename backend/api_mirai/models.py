@@ -29,6 +29,7 @@ class Pais(models.Model):
 # -----------------------------------------------
 class User(AbstractUser):
   pais = models.ForeignKey(Pais, on_delete=models.PROTECT,null=True,blank=True) #No permir borrar país si algun usuario lo esta usando.
+  email = models.EmailField(unique=True)
   def __str__(self):
     return f"{self.first_name} {self.last_name}"
 

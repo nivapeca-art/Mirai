@@ -1,10 +1,11 @@
 from rest_framework import generics
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.contrib.auth import get_user_model 
 from django.db.models import Q
 from .models import Moneda,Pais,Meta,MetaMovimiento,Categoria,Movimiento,Obligacion
-from .serializer import MonedaSerializer,PaisSerializer,UsuarioSerializer,MetaSerializer,MetaMovimientoSerializer,CategoriaSerializer,MovimientoSerializer,ObligacionSerializer
+from .serializer import MonedaSerializer,PaisSerializer,UsuarioSerializer,MetaSerializer,MetaMovimientoSerializer,CategoriaSerializer,MovimientoSerializer,ObligacionSerializer,LoginSerializer
 #Dashboard y PDF
 from rest_framework.views import APIView
 from .services.dashboard import obtener_dashboard
@@ -19,7 +20,6 @@ User=get_user_model()
 # MONEDAS
 # -----------------------------------------------
 class MonedaViewSet (ModelViewSet):
-  permission_classes = [IsAuthenticated]
   queryset = Moneda.objects.all()
   serializer_class = MonedaSerializer
 
@@ -27,7 +27,6 @@ class MonedaViewSet (ModelViewSet):
 # PAISES
 # -----------------------------------------------
 class PaisViewSet (ModelViewSet):
-  permission_classes = [IsAuthenticated]
   queryset = Pais.objects.all()
   serializer_class = PaisSerializer
 
@@ -41,6 +40,12 @@ class UsuarioViewSet (ModelViewSet):
   http_method_names = ['get', 'patch', 'head', 'options']
   def get_queryset(self):
     return User.objects.filter(id=self.request.user.id)
+
+# -----------------------------------------------
+# LOGIN
+# -----------------------------------------------
+class LoginView(TokenObtainPairView):
+    serializer_class = LoginSerializer
 
 # -----------------------------------------------
 # METAS
@@ -146,9 +151,9 @@ class ObligacionViewSet(ModelViewSet):
 # REGISTRO
 # -----------------------------------------------
 class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UsuarioSerializer
-    permission_classes = [AllowAny]
+  queryset = User.objects.all()
+  serializer_class = UsuarioSerializer
+  permission_classes = [AllowAny]
 
 # -----------------------------------------------
 # DASHBOARD
@@ -164,13 +169,11 @@ class DashboardView(APIView):
 # REPORTE PDF
 # -----------------------------------------------
 class ReportePDFView(APIView):
+  permission_classes = [IsAuthenticated]
 
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        periodo = request.query_params.get("periodo", "mensual")
-
-        return generar_reporte_pdf(
-            request.user,
-            periodo
-        )
+  def get(self, request):
+    periodo = request.query_params.get("periodo", "mensual")
+    return generar_reporte_pdf(
+      request.user,
+      periodo
+    )

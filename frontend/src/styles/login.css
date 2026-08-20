@@ -1,0 +1,382 @@
+/* =========================================
+   AUTH
+========================================= */
+.auth {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  font-family: "Poppins", sans-serif;
+  background: #ffffff;
+}
+
+/* =========================================
+   CONTENEDOR
+========================================= */
+
+.formularios-contenedor {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+/* =========================================
+   CARD
+========================================= */
+
+.formulario-card {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: authAppear 0.45s ease;
+}
+
+@keyframes authAppear {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* =========================================
+   LOGO
+========================================= */
+.logo-app {
+  display: block;
+  width: 160px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+/* =========================================
+   CONTENIDO
+========================================= */
+.formulario-container {
+  width: 100%;
+}
+
+/* =========================================
+   FORMULARIO
+========================================= */
+.formulario {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* =========================================
+   CAMPOS
+========================================= */
+.campos {
+  position: relative;
+  width: 100%;
+}
+/* INPUTS Y SELECT */
+.campos input,
+.campos select {
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+  padding: 0 48px 0 46px;
+  border: 1px solid transparent;
+  border-radius: 28px;
+  outline: none;
+  background: #f1f4f6;
+  color: #053b52;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  transition:
+    background 0.25s ease,
+    border 0.25s ease,
+    box-shadow 0.25s ease;
+}
+/* SELECT */
+.campos select {
+  appearance: none;
+  cursor: pointer;
+}
+/* HOVER */
+.campos:hover input,
+.campos:hover select {
+  background: #edf1f3;
+}
+/* FOCUS */
+.campos input:focus,
+.campos select:focus {
+  border-color: #064b68;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(6, 75, 104, 0.08);
+}
+/* LABEL */
+.campos label {
+  position: absolute;
+  left: 46px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 5px;
+  color: #78909c;
+  font-size: 14px;
+  pointer-events: none;
+  transition:
+    top 0.25s ease,
+    transform 0.25s ease,
+    font-size 0.25s ease,
+    color 0.25s ease,
+    background 0.25s ease;
+}
+/* MOUSE */
+.campos:hover label {
+  top: 0;
+  transform: translateY(-50%);
+  background: #f1f4f6;
+  color: #064b68;
+  font-size: 11px;
+}
+/* INPUT ENFOCADO */
+.campos input:focus + label {
+  top: 0;
+  transform: translateY(-50%);
+  background: white;
+  color: #064b68;
+  font-size: 11px;
+}
+/* INPUT CON CONTENIDO */
+.campos input:not(:placeholder-shown) + label {
+  top: 0;
+  transform: translateY(-70%);
+  background: white;
+  color: #064b68;
+  font-size: 11px;
+  border-radius: 5px;
+}
+/* SELECT SELECCIONADO */
+.campos.campo-seleccionado label {
+  top: 0;
+  transform: translateY(-50%);
+  background: white;
+  color: #064b68;
+  font-size: 11px;
+}
+/* SELECT ENFOCADO */
+.campos select:focus + label {
+  top: 0;
+  transform: translateY(-50%);
+  background: white;
+  color: #064b68;
+  font-size: 11px;
+}
+
+/* ICONO DEL CAMPO */
+.campo-icono {
+  position: absolute;
+  left: 17px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #78909c;
+  pointer-events: none;
+  transition: color 0.25s ease;
+  z-index: 2;
+}
+.campos:hover .campo-icono,
+.campos:focus-within .campo-icono {
+  color: #064b68;
+}
+
+/* OJO CONTRASEÑA */
+
+.icono-contrasena {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #78909c;
+  cursor: pointer;
+  z-index: 3;
+  transition: color 0.2s ease;
+}
+
+.icono-contrasena:hover {
+  color: #064b68;
+}
+.requisitos-contrasena {
+  margin-top: -5px;
+  font-size: 13px;
+}
+/* Requisitos al escribir la contraseña */
+.requisitos-contrasena span {
+  display: block;
+  margin-bottom: 5px;
+}
+.requisitos-contrasena div {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin: 2px 0;
+  opacity: 0.6;
+  padding-left: 6px;
+}
+.requisitos-contrasena .cumplido {
+  opacity: 1;
+  color: #008000;
+  background: #ddfcdd;
+  padding: 4px;
+  margin-left: 4px;
+  border-radius: 10px;
+}
+/* =========================================
+   ERROR
+========================================= */
+
+.error {
+  padding: 5px;
+  border-radius: 10px;
+  background: #fdecec;
+  color: #c62828;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* =========================================
+   BOTÓN
+========================================= */
+.boton {
+  width: 125px;
+  border: 1px solid #053b52;
+  border-radius: 22px;
+  background: transparent;
+  color: #053b52;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
+}
+.boton:hover {
+  background: #053b52;
+  color: white;
+  transform: translateY(-1px);
+}
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+.footer {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 5px;
+  margin-bottom: 45px;
+  color: #6b7280;
+  font-size: 13px;
+}
+.footer a {
+  color: #064b68;
+  font-weight: 600;
+  text-decoration: none;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   PESTAÑAS
+========================================= */
+.vistas {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  z-index: 10;
+  border-bottom: 3px solid #064b68;
+  white-space: nowrap;
+}
+.vistas a {
+  padding: 10px;
+  color: #064b68;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+.vistas a.active {
+  background: #064b68;
+  color: white;
+  border-radius: 15px 15px 0 0;
+}
+
+/* =========================================
+   ANIMACIÓN REGISTRO
+========================================= */
+.auth--registro .formulario-card {
+  animation: registroAppear 0.4s ease;
+}
+@keyframes registroAppear {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 600px) {
+  .formularios-contenedor {
+    padding: 30px 20px;
+  }
+  .formulario-card {
+    max-width: 400px;
+  }
+  .logo-app {
+    width: 150px;
+    margin-bottom: 25px;
+  }
+  .requisitos-contrasena{
+    font-size: 10px;
+  }
+  .error{
+    font-size: 12px;
+  }
+  .vistas {
+    bottom: 10px;
+  }
+  .vistas a {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}
