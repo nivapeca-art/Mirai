@@ -4,6 +4,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
 from .models import Moneda,Pais,User,Meta,MetaMovimiento,Categoria,Movimiento,Obligacion
 from datetime import date
+from django.utils import timezone
 
 # -----------------------------------------------
 # MONEDA
@@ -68,40 +69,52 @@ class UsuarioSerializer(serializers.ModelSerializer):
 # -----------------------------------------------
 class LoginSerializer(TokenObtainPairSerializer):
 
-  username_field = 'login'
+    username_field = 'login'
 
-  login = serializers.CharField()
-  password = serializers.CharField(write_only=True)
+    login = serializers.CharField()
+    password = serializers.CharField(write_only=True)
 
-  def validate(self, attrs):
+    def validate(self, attrs):
 
-    login = attrs.get('login')
-    password = attrs.get('password')
+        login = attrs.get('login')
+        password = attrs.get('password')
 
-    if '@' in login:
-      usuario = User.objects.filter(email=login).first()
-    else:
-      usuario = User.objects.filter(username=login).first()
+        if '@' in login:
+            usuario = User.objects.filter(email=login).first()
+        else:
+            usuario = User.objects.filter(username=login).first()
 
-    if usuario is None or not usuario.check_password(password):
-      raise serializers.ValidationError(
-        'Usuario/correo o contraseña incorrectos.'
-      )
+        # Verificar usuario y contraseña
+        if usuario is None or not usuario.check_password(password):
+            raise serializers.ValidationError(
+                'Usuario/correo o contraseña incorrectos.'
+            )
 
-    refresh = self.get_token(usuario)
+        # -----------------------------------------------
+        # ACTUALIZAR ÚLTIMO ACCESO
+        # -----------------------------------------------
 
-    return {
-      'refresh': str(refresh),
-      'access': str(refresh.access_token),
+        usuario.last_login = timezone.now()
+        usuario.save(update_fields=['last_login'])
 
-      'usuario': {
-        'id': usuario.id,
-        'username': usuario.username,
-        'first_name': usuario.first_name,
-        'last_name': usuario.last_name,
-        'email': usuario.email,
-      }
-    }
+        # -----------------------------------------------
+        # GENERAR TOKEN
+        # -----------------------------------------------
+
+        refresh = self.get_token(usuario)
+
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+
+            'usuario': {
+                'id': usuario.id,
+                'username': usuario.username,
+                'first_name': usuario.first_name,
+                'last_name': usuario.last_name,
+                'email': usuario.email,
+            }
+        }
 # -----------------------------------------------
 # META
 # -----------------------------------------------

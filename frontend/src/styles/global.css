@@ -2,24 +2,66 @@
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
+html, body, #root {
   margin: 0;
   min-height: 100%;
 }
 
 body {
   font-family: "Poppins", sans-serif;
-
   background: #f3f4f6;
-
   color: #1f2937;
 }
 
-button,
-input,
-textarea,
-select {
+button,input,textarea,select {
   font-family: inherit;
+}
+h1{
+  color: #053b52;
+  margin: 0;
+  font-size: 24px;
+  text-transform: uppercase;
+}
+h2{
+  margin: 0;
+  color: #053b52;
+  font-size: 16px;
+}
+.meta, .dashboard{
+  padding: 10px;
+}
+
+/* 🟢 Variación favorable */
+.alteracion.positiva, 
+.comparacion-positiva,
+.obligacion-normal {
+  color: #2e8b57;
+  background: #e4f7ea;
+}
+/* 🔴 Variación desfavorable */
+.alteracion.negativa,
+.comparacion-negativa,
+.obligacion-vencida,
+.obligacion-hoy {
+  color: #c62828;
+  background: #f8d7da;
+}
+/* ⚪ Sin cambios */
+.alteracion.igual, .comparacion-igual {
+  color: #6b7280;
+  background: #e5e7eb;
+}
+/* Mensaje debajo de la alteración */
+.mensaje, .comparacion-mensaje {
+  margin: 5px 0 0;
+  color: #999999;
+  font-size: 12px;
+}
+.comparacion-positiva,
+.comparacion-negativa,
+.comparacion-igual {
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
 }

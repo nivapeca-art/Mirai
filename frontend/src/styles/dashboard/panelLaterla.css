@@ -1,0 +1,300 @@
+/* ==============================
+          PANEL LATERAL
+============================== */
+.panel-lateral {
+  grid-area: lateral;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.info-cuenta,
+.calendario,
+.movimientos {
+  background: white;
+  border-radius: 10px;
+}
+/* ---------- PERFIL ---------- */
+.perfil-usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(5, 59, 82, 0.06);
+}
+.perfil-avatar {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(#F7AD1A,#c62828 );
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+}
+.perfil-datos {
+  min-width: 0;
+}
+.perfil-datos h3 {
+  margin: 0;
+  color: #053b52;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.perfil-datos span {
+  display: block;
+  margin-top: 2px;
+  color: #999999;
+  font-size: 11px;
+}
+
+/* ---------- ACCESOS RÁPIDOS ---------- */
+.accesos-rapidos {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(5, 59, 82, 0.06);
+}
+.accesos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+  margin-top: 10px;
+}
+.accesos-grid button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 5px;
+  border: none;
+  border-radius: 8px;
+  background: #f2f5f7;
+  color: #1799d1;
+  font-size: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.accesos-grid button:hover {
+  background: #e5ecef;
+}
+
+/* ---------- CALENDARIO ---------- */
+.calendario {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(5, 59, 82, 0.06);
+}
+.calendario-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+}
+.dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 0;
+  border-radius: 8px;
+}
+.dia-nombre {
+  color: #999999;
+  font-size: 9px;
+}
+.dia-numero {
+  color: #053b52;
+  font-size: 12px;
+  font-weight: 600;
+}
+.dia-hoy {
+  background: #dff2ff;
+}
+.dia-hoy .dia-nombre,
+.dia-hoy .dia-numero {
+  color: #053b52;
+}
+.dia-obligacion {
+  background: #ffe0e5;
+}
+.dia-obligacion .dia-nombre,
+.dia-obligacion .dia-numero {
+  color: #cb2a49;
+}
+
+/* ---------- OBLIGACIONES ---------- */
+.obligaciones {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(5, 59, 82, 0.06);
+}
+/* Header */
+.obligaciones-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.obligaciones-header p {
+  margin: 3px 0 0;
+  color: #999999;
+  font-size: 10px;
+}
+.obligaciones-header button {
+  border: none;
+  background: transparent;
+  color: #053b52;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 0;
+}
+.obligaciones-header button:hover {
+  color: #1799d1;
+}
+/* Lista */
+.obligaciones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+/* Item */
+.obligacion-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f2f5f7;
+  transition:
+    background 0.2s ease,
+    opacity 0.2s ease;
+}
+.obligacion-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+/* Estado de la obligación */
+.estado-obligacion {
+  min-width: 76px;
+  border: none;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+.estado-obligacion:hover {
+  transform: translateY(-1px);
+}
+.estado-obligacion:active {
+  transform: translateY(0);
+}
+/* Pendiente */
+.estado-obligacion.pendiente {
+  background: #fff1c7;
+  color: #F7AD1A;
+}
+.estado-obligacion.pendiente:hover {
+  background: #fff1c7;
+}
+/* Cumplida */
+.estado-obligacion.cumplida {
+  background: #e4f7ea;
+  color: #2e8b57;
+}
+.estado-obligacion.cumplida:hover {
+  background: #d4f0dc;
+}
+/* Mientras guarda */
+.estado-obligacion:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  transform: none;
+}
+
+/* Información */
+.obligacion-info {
+  min-width: 0;
+}
+.obligacion-info h3 {
+  margin: 0;
+  color: #053b52;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.obligacion-info span {
+  display: block;
+  margin-top: 3px;
+  color: #999999;
+  font-size: 10px;
+}
+/* Obligaciones estados */
+.obligacion-cumplida {
+  background: #f7fcf8;
+  border-radius: 8px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+.obligacion-cumplida .obligacion-info h3 {
+  color: #57916b;
+}
+.obligacion-cumplida .obligacion-info span {
+  color: #8baa96;
+}
+/* Vencida */
+.obligacion-vencida,
+.obligacion-hoy,
+.obligacion-proxima,
+.obligacion-normal {
+  flex-shrink: 0;
+  padding: 4px 7px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 600;
+}
+/* Hoy */
+.obligacion-hoy {
+  color: #cb2a49;
+  background: #ffe0e5;
+}
+/* Próxima */
+.obligacion-proxima {
+  color: #F7AD1A;
+  background: #fff1c7;
+}
+/* Normal */
+.obligacion-normal {
+  color: #1799d1;
+  background: #e1f3fc;
+}
+/* Vencida */
+.obligacion-vencida {
+  color: #b42318;
+  background: #fde8e7;
+}
+/* Vacio */
+.obligaciones-vacio {
+  padding: 20px 0 8px;
+  text-align: center;
+  color: #999999;
+  font-size: 10px;
+}

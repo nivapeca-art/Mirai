@@ -142,7 +142,7 @@ class ObligacionViewSet(ModelViewSet):
     activa = self.request.query_params.get("activa")
     if activa is not None:
       queryset = queryset.filter(activa=activa.lower() == "true")
-      return queryset
+    return queryset
   
   def perform_create(self, serializer):
     serializer.save(usuario=self.request.user)
@@ -161,9 +161,15 @@ class RegisterView(generics.CreateAPIView):
 class DashboardView(APIView):
   permission_classes = [IsAuthenticated]
   def get(self, request):
-    datos = obtener_dashboard(request.user)
+    periodo = request.query_params.get(
+      "periodo",
+      "mes"
+    )
+    datos = obtener_dashboard(
+      request.user,
+      periodo
+    )
     return Response(datos)
-
 
 # -----------------------------------------------
 # REPORTE PDF

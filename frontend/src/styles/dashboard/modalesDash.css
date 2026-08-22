@@ -1,0 +1,138 @@
+/* ---------- MODALES ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(5, 59, 82, 0.35);
+  padding: 20px;
+}
+.modal-contenido {
+  width: min(420px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fbf7ed;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(5, 59, 82, 0.06);
+  animation: aparecer-modal 0.2s ease;
+}
+@keyframes aparecer-modal {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid #f7ad1a6d;
+}
+.modal-header h2 {
+  margin: 0;
+  color: #F7AD1A;
+  font-size: 17px;
+}
+.modal-cerrar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #F7AD1A;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+/* Cerrar */
+.modal-cerrar:hover {
+  background: #fff1c7;
+  color: #CB2A49;
+}
+.modal-body {
+  padding: 18px;
+}
+
+/* ---------- CAMPOS ---------- */
+.campo-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 16px;
+}
+.campo-modal label {
+  color: #F7AD1A;
+  font-size: 12px;
+  font-weight: 600;
+}
+.campo-modal input,
+.campo-modal select,
+.campo-modal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 10px;
+  border: 1px solid  #f7ad1a6d;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #F7AD1A;
+  font-family: inherit;
+  font-size: 12px;
+  outline: none;
+}
+.campo-modal input:focus,
+.campo-modal select:focus,
+.campo-modal textarea:focus {
+  border-color: #CB2A49;
+  box-shadow: 0 2px 8px rgba(5, 59, 82, 0.06);
+}
+
+/* ---------- BOTONES ---------- */
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 20px 16px 10px 0;
+}
+.btn-cancelar,
+.btn-guardar {
+  padding: 8px 14px;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-cancelar {
+  border: 1px solid #cb2a4a5f;
+  background: white;
+  color: #CB2A49;
+}
+.btn-cancelar:hover {
+  background: #fef7f8;
+}
+.btn-guardar {
+  border: 1px solid #00924452;
+  background:  white;
+  color: #009245;
+}
+.btn-guardar:hover {
+  background: #f2fff5;
+}
+
+/* ---------- ERROR ---------- */
+.error {
+  margin: 15px;
+  padding: 5px;
+  border-radius: 10px;
+  background: #fdecec;
+  color: #c62828;
+  font-size: 13px;
+  text-align: center;
+}

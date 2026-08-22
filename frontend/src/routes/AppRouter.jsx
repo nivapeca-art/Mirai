@@ -2,6 +2,8 @@ import {BrowserRouter,Route,Routes} from "react-router-dom"
 import Autenticar from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import RutaProtegida from "./RutaProtegida";
+import Layout from "../layout/Layout";
+import Metas from "../pages/Metas";
 
 function AppRouter (){
   return(
@@ -12,7 +14,12 @@ function AppRouter (){
       <Route path="/registro" element={<Autenticar/>}/>
       {/* Rutas privadas */}
        <Route element={<RutaProtegida />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route element={<Layout/>}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/metas" element={<Metas />} />
+        </Route>
+        
       </Route>
 
     </Routes>

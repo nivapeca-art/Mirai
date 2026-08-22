@@ -1,7 +1,23 @@
 from datetime import date, timedelta
+from django.utils import timezone
 from decimal import Decimal
 from django.db.models import Sum
 from ..models import Movimiento, Meta, Obligacion
+
+MESES = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre"
+]
 
 def calcular_variacion(actual, anterior):
   actual = Decimal(actual or 0)
@@ -38,13 +54,47 @@ def calcular_variacion(actual, anterior):
     else "Sin cambios"
   }
 
-def obtener_dashboard(usuario):
-  hoy = date.today()
-  # PERÍODO ACTUAL
-  inicio_periodo = hoy.replace(day=1)
-  # PERÍODO ANTERIOR
-  fin_periodo_anterior = inicio_periodo - timedelta(days=1)
-  inicio_periodo_anterior = fin_periodo_anterior.replace(day=1)
+def obtener_dashboard(usuario, periodo="mes"):
+  print("PERIODO RECIBIDO:", periodo)
+  if periodo not in ["mes", "comparacion", "anual"]:
+    periodo = "mes"
+  hoy = timezone.localdate()
+  # --------------------------------------------------
+  # DEFINIR PERÍODOS
+  # --------------------------------------------------
+  inicio_mes_actual = hoy.replace(day=1)
+  fin_mes_anterior = inicio_mes_actual - timedelta(days=1)
+  inicio_mes_anterior = fin_mes_anterior.replace(day=1)
+  # Primer día del año
+  inicio_anio = hoy.replace(
+    month=1,
+    day=1
+  )
+  # --------------------------------------------------
+  # PERÍODO PRINCIPAL
+  # --------------------------------------------------
+
+  if periodo == "mes":
+    inicio_periodo = inicio_mes_actual
+    fin_periodo = hoy
+    inicio_periodo_anterior = inicio_mes_anterior
+    fin_periodo_anterior = fin_mes_anterior
+    nombre_periodo = "Mes actual"
+
+  elif periodo == "comparacion":
+    inicio_periodo = inicio_mes_actual
+    fin_periodo = hoy
+    inicio_periodo_anterior = inicio_mes_anterior
+    fin_periodo_anterior = fin_mes_anterior
+    nombre_periodo = "Mes vs mes anterior"
+
+  elif periodo == "anual":
+    inicio_periodo = inicio_anio
+    fin_periodo = hoy
+    inicio_periodo_anterior = inicio_anio
+    fin_periodo_anterior = hoy
+    nombre_periodo = "Año actual"
+
   # --------------------------------------------------
   # MOVIMIENTOS
   # --------------------------------------------------
@@ -52,7 +102,7 @@ def obtener_dashboard(usuario):
   # MOVIMIENTOS DEL MES ACTUAL
   movimientos_actuales = movimientos.filter(
     fecha__gte=inicio_periodo,
-    fecha__lte=hoy
+    fecha__lte=fin_periodo
   )
   ingresos = (
     movimientos_actuales
@@ -80,7 +130,7 @@ def obtener_dashboard(usuario):
     fecha__lte=fin_periodo_anterior
   )
   ingresos_anterior = (
-      movimientos_anterior
+    movimientos_anterior
     .filter(tipo="INGRESO")
     .aggregate(total=Sum("monto"))["total"]
     or Decimal("0")
@@ -102,7 +152,264 @@ def obtener_dashboard(usuario):
     - gastos_anterior
     - ahorros_anterior
   )
+
+# --------------------------------------------------
+# BALANCE
+# --------------------------------------------------
+  balance_data = []
+# --------------------------------------------------
+# MES ACTUAL
+# --------------------------------------------------
+  if periodo == "mes":
+    saldo_acumulado = Decimal("0")
+    fecha_actual = inicio_periodo
+    while fecha_actual <= fin_periodo:
+      movimientos_dia = movimientos.filter(
+        fecha=fecha_actual
+      )
+
+      ingresos_dia = (
+        movimientos_dia
+        .filter(tipo="INGRESO")
+        .aggregate(total=Sum("monto"))["total"]
+        or Decimal("0")
+      )
+
+      gastos_dia = (
+        movimientos_dia
+        .filter(tipo="GASTO")
+        .aggregate(total=Sum("monto"))["total"]
+        or Decimal("0")
+      )
+
+      ahorros_dia = (
+        movimientos_dia
+        .filter(tipo="AHORRO")
+        .aggregate(total=Sum("monto"))["total"]
+        or Decimal("0")
+      )
+
+      variacion_dia = (
+        ingresos_dia
+        - gastos_dia
+        - ahorros_dia
+      )
+      saldo_acumulado += variacion_dia
+      balance_data.append({
+        "fecha": fecha_actual,
+        "dia": fecha_actual.day,
+        "ingresos": int(ingresos_dia),
+        "gastos": int(gastos_dia),
+        "ahorros": int(ahorros_dia),
+        "saldo": int(saldo_acumulado)
+      })
+      fecha_actual += timedelta(days=1)
+  # --------------------------------------------------
+# MES VS MES ANTERIOR
+# --------------------------------------------------
+
+  elif periodo == "comparacion":
+
+    dia_hasta = hoy.day
+
+    for dia in range(1, dia_hasta + 1):
+
+        # ------------------------------------------
+        # FECHA MES ACTUAL
+        # ------------------------------------------
+
+        fecha_actual = inicio_mes_actual.replace(day=dia)
+
+        # ------------------------------------------
+        # FECHA MES ANTERIOR
+        # ------------------------------------------
+
+        try:
+            fecha_anterior = inicio_mes_anterior.replace(day=dia)
+        except ValueError:
+            fecha_anterior = None
+
+        # ------------------------------------------
+        # MOVIMIENTOS ACTUALES
+        # ------------------------------------------
+
+        movimientos_actual_dia = movimientos.filter(
+            fecha=fecha_actual
+        )
+
+        ingresos_actual = (
+            movimientos_actual_dia
+            .filter(tipo="INGRESO")
+            .aggregate(total=Sum("monto"))["total"]
+            or Decimal("0")
+        )
+
+        gastos_actual = (
+            movimientos_actual_dia
+            .filter(tipo="GASTO")
+            .aggregate(total=Sum("monto"))["total"]
+            or Decimal("0")
+        )
+
+        ahorros_actual = (
+            movimientos_actual_dia
+            .filter(tipo="AHORRO")
+            .aggregate(total=Sum("monto"))["total"]
+            or Decimal("0")
+        )
+
+        # ------------------------------------------
+        # MOVIMIENTOS MES ANTERIOR
+        # ------------------------------------------
+
+        if fecha_anterior:
+
+            movimientos_anterior_dia = movimientos.filter(
+                fecha=fecha_anterior
+            )
+
+            ingresos_anterior_dia = (
+                movimientos_anterior_dia
+                .filter(tipo="INGRESO")
+                .aggregate(total=Sum("monto"))["total"]
+                or Decimal("0")
+            )
+
+            gastos_anterior_dia = (
+                movimientos_anterior_dia
+                .filter(tipo="GASTO")
+                .aggregate(total=Sum("monto"))["total"]
+                or Decimal("0")
+            )
+
+            ahorros_anterior_dia = (
+                movimientos_anterior_dia
+                .filter(tipo="AHORRO")
+                .aggregate(total=Sum("monto"))["total"]
+                or Decimal("0")
+            )
+
+        else:
+
+            ingresos_anterior_dia = Decimal("0")
+            gastos_anterior_dia = Decimal("0")
+            ahorros_anterior_dia = Decimal("0")
+
+        # ------------------------------------------
+        # AGREGAR DÍA
+        # ------------------------------------------
+
+        balance_data.append({
+            "dia": dia,
+
+            "actual": {
+                "ingresos": int(ingresos_actual),
+                "gastos": int(gastos_actual),
+                "ahorros": int(ahorros_actual),
+            },
+
+            "anterior": {
+                "ingresos": int(ingresos_anterior_dia),
+                "gastos": int(gastos_anterior_dia),
+                "ahorros": int(ahorros_anterior_dia),
+            }
+        })
+
+
+# --------------------------------------------------
+# ANUAL
+# --------------------------------------------------
+
+  else:
+
+    saldo_acumulado = Decimal("0")
+
+    for mes in range(1, hoy.month + 1):
+
+        inicio_mes = date(
+            hoy.year,
+            mes,
+            1
+        )
+
+        # Primer día del siguiente mes
+        if mes == 12:
+
+            fin_mes = date(
+                hoy.year + 1,
+                1,
+                1
+            ) - timedelta(days=1)
+
+        else:
+
+            fin_mes = date(
+                hoy.year,
+                mes + 1,
+                1
+            ) - timedelta(days=1)
+
+        # Si es el mes actual,
+        # solo llegamos hasta hoy
+        if mes == hoy.month:
+
+            fin_mes = hoy
+
+        movimientos_mes = movimientos.filter(
+            fecha__gte=inicio_mes,
+            fecha__lte=fin_mes
+        )
+
+        ingresos_mes = (
+            movimientos_mes
+            .filter(tipo="INGRESO")
+            .aggregate(total=Sum("monto"))["total"]
+            or Decimal("0")
+        )
+
+        gastos_mes = (
+            movimientos_mes
+            .filter(tipo="GASTO")
+            .aggregate(total=Sum("monto"))["total"]
+            or Decimal("0")
+        )
+
+        ahorros_mes = (
+            movimientos_mes
+            .filter(tipo="AHORRO")
+            .aggregate(total=Sum("monto"))["total"]
+            or Decimal("0")
+        )
+
+        variacion_mes = (
+            ingresos_mes
+            - gastos_mes
+            - ahorros_mes
+        )
+
+        saldo_acumulado += variacion_mes
+
+        balance_data.append({
+
+            "fecha": inicio_mes,
+
+            "mes": MESES[mes - 1],
+
+            "mes_numero": mes,
+
+            "ingresos": int(ingresos_mes),
+
+            "gastos": int(gastos_mes),
+
+            "ahorros": int(ahorros_mes),
+
+            "saldo": int(saldo_acumulado)
+
+        })
+
+  # --------------------------------------------------
   # COMPARACIONES
+  # --------------------------------------------------
   comparacion = {
     "ingresos": calcular_variacion(
       ingresos,
@@ -121,6 +428,7 @@ def obtener_dashboard(usuario):
       saldo_anterior
     )
   }
+  
   # --------------------------------------------------
   # METAS
   # --------------------------------------------------
@@ -168,13 +476,16 @@ def obtener_dashboard(usuario):
     obligaciones_data.append({
       "id": obligacion.id,
       "nombre": obligacion.nombre,
-      "monto": int(obligacion.monto_estimado),
+      "monto_estimado": int(obligacion.monto_estimado),
       "fecha_limite": obligacion.fecha_limite,
-      "dias_restantes": dias_restantes
+      "dias_restantes": dias_restantes,
+      "activa": obligacion.activa,
+      "cumplida": obligacion.cumplida
     })
   # --------------------------------------------------
-  # GASTOS POR CATEGORÍA
+  # CATEGORÍA
   # --------------------------------------------------
+  # GASTOS
   gastos_categoria = (
     movimientos_actuales
     .filter(
@@ -190,7 +501,6 @@ def obtener_dashboard(usuario):
     )
     .order_by("-total")
   )
-
   gastos_categoria_data = []
   for gasto in gastos_categoria:
     gastos_categoria_data.append({
@@ -198,6 +508,32 @@ def obtener_dashboard(usuario):
       "categoria": gasto["categoria__nombre"],
       "total": int(gasto["total"])
     })
+  # COMPARACIÓN 
+  # Siempre inicializamos la lista
+  gastos_categoria_anterior_data = []
+  # En el período anual no se compara de categorías contra otro período.
+  if periodo != "anual":
+    gastos_categoria_anterior = (
+      movimientos_anterior
+      .filter(
+        tipo="GASTO",
+        categoria__isnull=False
+      )
+      .values(
+        "categoria__id",
+        "categoria__nombre"
+      )
+      .annotate(
+        total=Sum("monto")
+      )
+      .order_by("-total")
+    )
+    for gasto in gastos_categoria_anterior:
+      gastos_categoria_anterior_data.append({
+        "categoria_id": gasto["categoria__id"],
+        "categoria": gasto["categoria__nombre"],
+        "total": int(gasto["total"])
+      })
   # --------------------------------------------------
   # MONEDA
   # --------------------------------------------------
@@ -217,10 +553,17 @@ def obtener_dashboard(usuario):
   # RESPUESTA
   # --------------------------------------------------
   return {
+    "usuario": {
+        "id": usuario.id,
+        "username": usuario.username,
+        "nombre": usuario.get_full_name(),
+        "email": usuario.email,
+        "ultimo_acceso": usuario.last_login
+    },
     "periodo": {
-      "nombre": "Mes actual",
+      "nombre": nombre_periodo,
       "inicio": inicio_periodo,
-      "fin": hoy
+      "fin": fin_periodo
     },
     "periodo_anterior": {
       "inicio": inicio_periodo_anterior,
@@ -232,7 +575,9 @@ def obtener_dashboard(usuario):
       "ahorros": int(ahorros),
       "saldo": int(saldo),
       "comparacion": comparacion,
+      "balance": balance_data,
       "metas": metas_data,
       "obligaciones": obligaciones_data,
-      "gastos_por_categoria": gastos_categoria_data
+      "gastos_por_categoria": gastos_categoria_data,
+      "gastos_por_categoria_anterior": gastos_categoria_anterior_data
   }

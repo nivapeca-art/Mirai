@@ -1,0 +1,20 @@
+.layout {
+  display: flex;
+  background: #fcfdff;
+  min-height: 100vh;
+  width: 100%;
+}
+/* Todas las páginas */
+.contenido {
+  flex: 1;
+  padding: 10px 10px 0 50px ;
+  box-sizing: border-box;
+  margin-left: 20px;
+  width: calc(100% - 20px);
+  transition: margin-left .3s ease, width .3s ease;
+}
+/* El contenido se desplaza cuando se hace hover en sidebar */
+.sidebar:hover ~ .contenido {
+  margin-left: 140px;
+  width: calc(100% - 140px);
+}

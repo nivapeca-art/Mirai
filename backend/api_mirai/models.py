@@ -108,4 +108,5 @@ class Obligacion(models.Model):
   monto_estimado = models.DecimalField(max_digits=12, decimal_places=2)
   frecuencia = models.CharField(max_length=20, blank=True)  #Mensual, anual, etc.
   activa = models.BooleanField(default=True)
+  cumplida = models.BooleanField(default=False)
   usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
