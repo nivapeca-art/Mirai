@@ -194,10 +194,24 @@ class CategoriaSerializer(serializers.ModelSerializer):
 # MOVIMIENTO
 # -----------------------------------------------
 class MovimientoSerializer(serializers.ModelSerializer):
+  # Traer la información en detalle de categoría y meta
+  categoria_detalle = CategoriaSerializer( source="categoria", read_only=True )
+  meta_detalle = MetaSerializer( source="meta", read_only=True )
   class Meta:
     model = Movimiento
-    fields = '__all__'
-    read_only_fields = ['usuario']
+    fields = [
+      "id",
+      "categoria",
+      "categoria_detalle",
+      "meta",
+      "meta_detalle",
+      "descripcion",
+      "fecha",
+      "monto",
+      "tipo",
+      "usuario"
+    ]
+    read_only_fields = ['usuario', 'categoria_detalle','meta_detalle']
     
   #Validar reglas
   def validate(self, data):

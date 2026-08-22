@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import ModalBase from "./ModalBase";
@@ -8,12 +7,12 @@ import { obtenerCategorias } from "../../../services/categoriaServices";
 import { obtenerMetas } from "../../../services/metaServices";
 
 function ModalMovimiento({ onCerrar, onGuardado }) {
-
   const [tipo, setTipo] = useState("INGRESO");
   const [monto, setMonto] = useState("");
   const [fecha, setFecha] = useState("");
   const [categoria, setCategoria] = useState("");
   const [meta, setMeta] = useState("");
+  const [descripcion, setDescripcion] = useState("");
 
   const [categorias, setCategorias] = useState([]);
   const [metas, setMetas] = useState([]);
@@ -32,23 +31,22 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
         obtenerMetas(),
       ]);
       // Categorias en orden alfabetico
-      const categoriasOrdenadas = categoriasData.sort(
-        (a, b) => a.nombre.localeCompare(b.nombre)
+      const categoriasOrdenadas = categoriasData.sort((a, b) =>
+        a.nombre.localeCompare(b.nombre),
       );
       // No mostrar las metas completas
       const metasEnProceso = metasData
-      .filter((meta) => meta.estado !== "COMPLETADO")
-      .sort((a, b) =>
-        a.nombre.localeCompare(b.nombre)
-      );
+        .filter((meta) => meta.estado !== "COMPLETADO")
+        .sort((a, b) => a.nombre.localeCompare(b.nombre));
       setCategorias(categoriasOrdenadas);
       setMetas(metasEnProceso);
-      
     } catch (error) {
       console.error("Error cargando datos:", error);
       setError("No se pudieron cargar las categorías y metas.");
     }
   };
+  // SEGUN EL TIPO, SALDRAN SOLO LAS CATEGORÍAS DE ESE TIPO
+  const categoriasFiltradas = categorias.filter((item) => item.tipo === tipo);
   // MANEJAR TIPO DE INGRESO
   const manejarTipo = (e) => {
     const nuevoTipo = e.target.value;
@@ -89,6 +87,7 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
       fecha,
       categoria: tipo === "AHORRO" ? null : Number(categoria),
       meta: tipo === "AHORRO" ? Number(meta) : null,
+      descripcion: descripcion.trim(),
     };
 
     try {
@@ -100,7 +99,6 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
         await onGuardado();
       }
       onCerrar();
-
     } catch (error) {
       console.error("Error creando movimiento:", error);
       const respuesta = error.response?.data;
@@ -110,7 +108,6 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
       } else {
         setError("No se pudo crear el movimiento.");
       }
-
     } finally {
       setGuardando(false);
     }
@@ -159,11 +156,13 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
               onChange={(e) => setCategoria(e.target.value)}
             >
               <option value="">Seleccionar categoría</option>
-              {categorias.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nombre}
-                </option>
-              ))}
+              {categorias
+                .filter((item) => item.tipo === tipo)
+                .map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.nombre}
+                  </option>
+                ))}
             </select>
           </div>
         )}
@@ -190,6 +189,16 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
             onChange={(e) => setFecha(e.target.value)}
           />
         </div>
+        {/* DESCRIPCIÓN */}
+        <div className="campo-modal">
+          <label>Descripción</label>
+          <textarea
+            placeholder="Describe tu movimiento..."
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+            rows={3}
+          />
+        </div>
         {/* ERROR */}
         {error && <p className="error">{error}</p>}
         {/* BOTONES */}
@@ -211,7 +220,6 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
       </form>
     </ModalBase>
   );
-
 }
 
 export default ModalMovimiento;

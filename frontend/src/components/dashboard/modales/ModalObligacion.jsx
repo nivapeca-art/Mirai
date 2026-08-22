@@ -174,11 +174,11 @@ function ModalObligacion({ onCerrar, onGuardado }) {
         {/* BOTONES */}
         <div className="modal-acciones">
           {/* Cerrar */}
-          <button type="button" className="btn-cancelar" onClick={onCerrar} disabled={guardado}>
+          <button type="button" className="btn-cancelar" onClick={onCerrar} disabled={guardando}>
             Cancelar
           </button>
           {/* Guardar */}
-          <button type="submit" className="btn-guardar" disabled={guardado}>
+          <button type="submit" className="btn-guardar" disabled={guardando}>
             {guardando ? "Guardando..." : "Crear obligación"}
           </button>
         </div>
