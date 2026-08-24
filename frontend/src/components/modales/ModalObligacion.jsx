@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 
 import ModalBase from "./ModalBase";
 
-import { crearObligacion } from "../../../services/obligacionServices";
-import { obtenerCategorias } from "../../../services/categoriaServices";
+import { crearObligacion } from "../../services/obligacionServices";
+import { obtenerCategorias } from "../../services/categoriaServices";
 
 function ModalObligacion({ onCerrar, onGuardado }) {
   

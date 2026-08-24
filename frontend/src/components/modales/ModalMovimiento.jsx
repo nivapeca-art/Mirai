@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 import ModalBase from "./ModalBase";
 
-import { crearMovimiento } from "../../../services/movimientoServices";
-import { obtenerCategorias } from "../../../services/categoriaServices";
-import { obtenerMetas } from "../../../services/metaServices";
+import { crearMovimiento } from "../../services/movimientoServices";
+import { obtenerCategorias } from "../../services/categoriaServices";
+import { obtenerMetas } from "../../services/metaServices";
 
 function ModalMovimiento({ onCerrar, onGuardado }) {
   const [tipo, setTipo] = useState("INGRESO");

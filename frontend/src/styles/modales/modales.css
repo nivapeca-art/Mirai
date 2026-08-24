@@ -1,12 +1,12 @@
 /* ---------- MODALES ---------- */
-.modal-overlay {
+.modal {
   position: fixed;
   inset: 0;
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(5, 59, 82, 0.35);
+  background: rgba(82, 83, 83, 0.35);
   padding: 20px;
 }
 .modal-contenido {

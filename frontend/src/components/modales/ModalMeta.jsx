@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import ModalBase from "./ModalBase";
 
-import { crearMeta } from "../../../services/metaServices";
+import { crearMeta } from "../../services/metaServices";
 
 
 function ModalMeta({ onCerrar, onGuardado }) {

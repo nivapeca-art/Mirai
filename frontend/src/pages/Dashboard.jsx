@@ -114,9 +114,7 @@ function Dashboard() {
         <MetasDash dashboard={dashboard} />
       </div>
       {/* PANEL LATERAL */}
-      <aside className="panel-lateral">
         <PanelLateral dashboard={dashboard} onGuardado={cargarDashboard} />
-      </aside>
     </div>
   );
 }

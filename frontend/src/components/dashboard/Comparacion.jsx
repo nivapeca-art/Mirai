@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { TrendingUp, TrendingDown, Minus, Plus } from "lucide-react";
 
-import ComparacionModal from "./modales/ModalComparacion";
+import ComparacionModal from "../modales/ModalComparacion";
 
 import "../../styles/dashboard/comparacion.css";
 

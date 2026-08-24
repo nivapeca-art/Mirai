@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-import "../../../styles/dashboard/modalComparacion.css";
+import "../../styles/modales/modalComparacion.css";
 
 function ComparacionModal({
   dashboard,

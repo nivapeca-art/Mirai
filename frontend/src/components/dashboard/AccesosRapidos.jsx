@@ -2,12 +2,12 @@ import { useState } from "react";
 
 import { ArrowLeftRight, Target, Tag, CalendarPlus } from "lucide-react";
 
-import ModalMeta from "./modales/ModalMeta";
-import ModalMovimiento from "./modales/ModalMovimiento";
-import ModalCategoria from "./modales/ModalCategoria";
-import ModalObligacion from "./modales/ModalObligacion";
+import ModalMeta from "../modales/ModalMeta";
+import ModalMovimiento from "../modales/ModalMovimiento";
+import ModalCategoria from "../modales/ModalCategoria";
+import ModalObligacion from "../modales/ModalObligacion";
 
-import "../../styles/dashboard/modalesDash.css"
+import "../../styles/modales/modales.css"
 
 function AccesosRapidos({onGuardado}) {
 

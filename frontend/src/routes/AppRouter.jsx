@@ -4,6 +4,7 @@ import Dashboard from "../pages/Dashboard";
 import RutaProtegida from "./RutaProtegida";
 import Layout from "../layout/Layout";
 import Metas from "../pages/Metas";
+import Movimientos from "../pages/Movimientos";
 
 function AppRouter (){
   return(
@@ -18,6 +19,7 @@ function AppRouter (){
         <Route element={<Layout/>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/metas" element={<Metas />} />
+          <Route path="/movimientos" element={<Movimientos />} />
         </Route>
         
       </Route>

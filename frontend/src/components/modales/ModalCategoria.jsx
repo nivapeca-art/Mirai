@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import ModalBase from "./ModalBase";
 
-import { crearCategoria } from "../../../services/categoriaServices";
+import { crearCategoria } from "../../services/categoriaServices";
 
 function ModalCategoria({ onCerrar, onGuardado }) {
 

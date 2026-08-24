@@ -333,6 +333,7 @@
 /* ---------- CSS DE PANEL LATERAL, ESTA EN panelLateral.css ---------- */
 
 /* ---------- RESPONSIVE ---------- */
+
 @media (max-width: 900px) {
   .dashboard {
     grid-template-columns: 1fr;
@@ -345,18 +346,28 @@
   }
   .panel-lateral {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 }
 
 @media (max-width: 650px) {
+  /* Las 3 tarjetas siguen en 3 columnas */
   .tarjetas-resumen {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .valor{
+    font-size: 14px;
+  }
+  /* El panel lateral queda en 2 columnas */
+  .panel-lateral {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .accesos-grid button{
+    padding: 6px;
+    font-size: 8px;
   }
   .inferior {
-    grid-template-columns: 1fr;
-  }
-  .panel-lateral {
     grid-template-columns: 1fr;
   }
   .dashboard-encabezado {
@@ -368,5 +379,4 @@
     justify-content: space-between;
   }
 }
-
 
