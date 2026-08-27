@@ -104,7 +104,7 @@ function Movimientos() {
           <p>Consulta y administra tus ingresos, gastos y ahorros.</p>
         </div>
         <button
-          className="movimientos-nuevo"
+          className="boton-nuevo"
           onClick={() => setModalAbierto(true)}
         >
           + Nuevo movimiento
@@ -134,7 +134,7 @@ function Movimientos() {
           }}
         />
       )}
-      
+
     </>
   );
 

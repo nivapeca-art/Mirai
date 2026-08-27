@@ -40,29 +40,19 @@ class Meta(models.Model):
   descripcion = models.TextField(blank=True)
   ESTADOS = [
     ("EN_PROCESO", "En proceso"),
-    ("COMPLETADO","Completado"),
-    ("CANCELADO","Cancelado")
+    ("COMPLETADO", "Completado"),
+    ("CANCELADO", "Cancelado")
   ]
-  estado = models.CharField(max_length=20,choices=ESTADOS, default="EN_PROCESO")
-  fecha_inicio = models.DateField(auto_now_add=True)#hoy
-  fecha_limite = models.DateField(null=True,blank=True)# Si no escribe queda null
-  monto_actual = models.DecimalField(max_digits=12, decimal_places=2, default=0) #xxx.xxx
-  monto_objetivo = models.DecimalField(max_digits=12, decimal_places=2) #xxx.xxx
-  nombre = models.CharField(max_length=100)#Viaje a japón
+  estado = models.CharField(max_length=20,choices=ESTADOS,default="EN_PROCESO")
+  fecha_inicio = models.DateField(auto_now_add=True)
+  fecha_limite = models.DateField(null=True,blank=True)
+  monto_actual = models.DecimalField(max_digits=12,decimal_places=2,default=0)
+  monto_objetivo = models.DecimalField(max_digits=12,decimal_places=2)
+  nombre = models.CharField(max_length=100)
   usuario = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
   def __str__(self):
-    return f"{self.usuario} {self.nombre} "
+    return f"{self.usuario} {self.nombre}"
   
-# -----------------------------------------------
-# META MOVIMIENTO
-# -----------------------------------------------
-class MetaMovimiento(models.Model):
-  fecha = models.DateField()#Del día que se realizo el movimiento
-  meta = models.ForeignKey(Meta,on_delete=models.CASCADE, related_name="movimientos")#Viaje a japón
-  monto = models.DecimalField(max_digits=20, decimal_places=2)#cantidad que se va a la meta
-  def __str__(self):
-    return f"{self.meta} {self.monto}"
-
 # -----------------------------------------------
 # TIPO DE MOVIMIENTO
 # -----------------------------------------------
@@ -87,16 +77,16 @@ class Categoria(models.Model):
 # MOVIMIENTO
 # -----------------------------------------------
 class Movimiento(models.Model):
-  categoria = models.ForeignKey(Categoria,on_delete=models.PROTECT,null=True,blank=True)#Servicio
+  categoria = models.ForeignKey(Categoria,on_delete=models.PROTECT,null=True,blank=True)
   meta = models.ForeignKey(Meta,on_delete=models.SET_NULL,null=True,blank=True)
-  descripcion = models.TextField(blank=True)#opcional
-  fecha = models.DateField()# auto_now_add=True es para que lo guarde automatico
-  monto = models.DecimalField(max_digits=12, decimal_places=2) #xxx.xxx
-  tipo = models.CharField(max_length=10, choices=TipoMovimiento.choices)#Gasto
+  descripcion = models.TextField(blank=True)
+  fecha = models.DateField()
+  monto = models.DecimalField(max_digits=12,decimal_places=2)
+  tipo = models.CharField(max_length=10,choices=TipoMovimiento.choices)
   usuario = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
   def __str__(self):
-    return f"{self.categoria} {self.meta} {self.monto} "
-
+        return f"{self.categoria} {self.meta} {self.monto}"
+  
 # -----------------------------------------------
 # OBLIGACIONES
 # -----------------------------------------------

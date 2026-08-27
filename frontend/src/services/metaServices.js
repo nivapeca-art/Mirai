@@ -22,3 +22,15 @@ export const actualizarMeta = async (id, meta) => {
 export const eliminarMeta = async (id) => {
   await api.delete(`metas/${id}/`);
 };
+
+export const crearAbono = async (abono) => {
+  const { data } = await api.post(
+    "movimientos/",
+    {
+      ...abono,
+      tipo: "AHORRO"
+    }
+  );
+
+  return data;
+};

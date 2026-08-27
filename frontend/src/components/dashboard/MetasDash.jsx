@@ -1,3 +1,4 @@
+import { Goal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function MetasDash({ dashboard }) {
@@ -43,14 +44,23 @@ function MetasDash({ dashboard }) {
       {/* Si no tiene metas */}
       {metas.length === 0 ? (
         <div className="metas-vacio">
-          <p>No tienes metas registradas.</p>
+          <div className="metas-vacio-icono">
+          <Goal size={18}/>
+          </div>
+          <h2>No tienes metas todavía.</h2>
+          <p>
+              Crea una meta para comenzar a organizar tus objetivos
+              y hacer seguimiento a tus ahorros.
+            </p>
           <button
-            className="metas-crear"
-            onClick={() => navigate("/metas")}
+            className="metas-vacio-boton"
+            // {state: { abrirModal: true }} Para abrir el modal al dar click
+            onClick={() => navigate("/metas", {state: { abrirModal: true }})}
           >
             Crear meta
           </button>
         </div>
+        
       ) : (
         // Mostrar las metas que tiene
         <div className="metas-lista">

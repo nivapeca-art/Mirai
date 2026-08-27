@@ -1,17 +1,14 @@
-// REACT
+
 import { NavLink, useNavigate } from "react-router-dom";
-// UTILIDADES
-import obtenerUsuarios from "../utils/obtenerUsuario";
-// ESTILOS
-import "../styles/sidebar.css"
+
 import { ArrowLeftRight, CalendarPlus, ChartColumn, FileText, LayoutDashboard, LogOut, Target } from "lucide-react";
 
-function Sidebar() {
-  // CONSTANTES
-  const navegar = useNavigate();
-  const usuario = obtenerUsuarios();
+import "../styles/sidebar.css"
 
-  // FUNCIONES
+function Sidebar() {
+
+  const navegar = useNavigate();
+
   const cerrarSesion = ()=>{
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
@@ -35,8 +32,8 @@ function Sidebar() {
         > <Target className="iconos-sidebar" size={20} /> <span>Metas</span>
         </NavLink>
         <NavLink
-          to="/obligacion" className={({ isActive }) => isActive ? "activo" : "" }
-        > <CalendarPlus className="iconos-sidebar" size={20} /> <span>Obligación</span>
+          to="/obligaciones" className={({ isActive }) => isActive ? "activo" : "" }
+        > <CalendarPlus className="iconos-sidebar" size={20} /> <span>Obligaciones</span>
         </NavLink>
         <NavLink
           to="/graficas" className={({ isActive }) => isActive ? "activo" : "" }
@@ -44,7 +41,7 @@ function Sidebar() {
         </NavLink>
         <NavLink
           to="/generarPDF" className={({ isActive }) => isActive ? "activo" : "" }
-        > <FileText className="iconos-sidebar" size={20} /> <span>Reporte</span>
+        > <FileText className="iconos-sidebar" size={20} /> <span>Reportes</span>
         </NavLink>
         <button onClick={cerrarSesion} className="logout"> <LogOut className="iconos-sidebar" size={20}/> <span>Salir</span> </button>
 

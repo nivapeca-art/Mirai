@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
-from .models import Moneda,Pais,User,Meta,MetaMovimiento,Categoria,Movimiento,Obligacion
+from .models import Moneda,Pais,User,Meta,Categoria,Movimiento,Obligacion
 from datetime import date
 from django.utils import timezone
 
@@ -68,53 +68,44 @@ class UsuarioSerializer(serializers.ModelSerializer):
 # LOGIN
 # -----------------------------------------------
 class LoginSerializer(TokenObtainPairSerializer):
+  username_field = 'login'
+  login = serializers.CharField()
+  password = serializers.CharField(write_only=True)
 
-    username_field = 'login'
+  def validate(self, attrs):
 
-    login = serializers.CharField()
-    password = serializers.CharField(write_only=True)
+    login = attrs.get('login')
+    password = attrs.get('password')
+    if '@' in login:
+      usuario = User.objects.filter(email=login).first()
+    else:
+      usuario = User.objects.filter(username=login).first()
+    # Verificar usuario y contraseña
+    if usuario is None or not usuario.check_password(password):
+      raise serializers.ValidationError(
+        'Usuario/correo o contraseña incorrectos.'
+      )
+    
+    # ACTUALIZAR ÚLTIMO ACCESO
+    usuario.last_login = timezone.now()
+    usuario.save(update_fields=['last_login'])
 
-    def validate(self, attrs):
+    # GENERAR TOKEN
+    refresh = self.get_token(usuario)
 
-        login = attrs.get('login')
-        password = attrs.get('password')
+    return {
+      'refresh': str(refresh),
+      'access': str(refresh.access_token),
 
-        if '@' in login:
-            usuario = User.objects.filter(email=login).first()
-        else:
-            usuario = User.objects.filter(username=login).first()
-
-        # Verificar usuario y contraseña
-        if usuario is None or not usuario.check_password(password):
-            raise serializers.ValidationError(
-                'Usuario/correo o contraseña incorrectos.'
-            )
-
-        # -----------------------------------------------
-        # ACTUALIZAR ÚLTIMO ACCESO
-        # -----------------------------------------------
-
-        usuario.last_login = timezone.now()
-        usuario.save(update_fields=['last_login'])
-
-        # -----------------------------------------------
-        # GENERAR TOKEN
-        # -----------------------------------------------
-
-        refresh = self.get_token(usuario)
-
-        return {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-
-            'usuario': {
-                'id': usuario.id,
-                'username': usuario.username,
-                'first_name': usuario.first_name,
-                'last_name': usuario.last_name,
-                'email': usuario.email,
-            }
-        }
+      'usuario': {
+        'id': usuario.id,
+        'username': usuario.username,
+        'first_name': usuario.first_name,
+        'last_name': usuario.last_name,
+        'email': usuario.email,
+      }
+    }
+    
 # -----------------------------------------------
 # META
 # -----------------------------------------------
@@ -122,65 +113,41 @@ class MetaSerializer(serializers.ModelSerializer):
   progreso = serializers.SerializerMethodField()
   class Meta:
     model = Meta
-    fields = '__all__'
+    fields = "__all__"
     read_only_fields = [
-      'fecha_inicio',
-      'usuario',
-      'progreso'
+      "fecha_inicio",
+      "usuario",
+      "monto_actual",
+      "progreso"
     ]
 
-  def get_fields(self):
-    fields = super().get_fields()
-     # Al editar una meta, monto_actual no se puede modificar
-    if self.instance is not None:
-      fields['monto_actual'].read_only = True
-    return fields
-  
   def validate(self, data):
-    if self.instance is None:
-      monto_actual = data.get('monto_actual', 0)
-      monto_objetivo = data.get('monto_objetivo')
-      if monto_actual > monto_objetivo:
-        raise serializers.ValidationError(
-          "El monto actual no puede superar el monto objetivo."
-        )
-      return data
+    monto_objetivo = data.get("monto_objetivo")
+    if monto_objetivo is not None and monto_objetivo <= 0:
+      raise serializers.ValidationError(
+        "El monto objetivo debe ser mayor a 0."
+      )
+    return data
 
   def create(self, validated_data):
-    meta = Meta.objects.create(**validated_data)
-    if meta.monto_actual >= meta.monto_objetivo:
-      meta.estado = "COMPLETADO"
-      meta.save()
+  # Toda meta nueva empieza en 0
+    validated_data["monto_actual"] = 0
+    meta = Meta.objects.create(
+      **validated_data
+    )
     return meta
 
   def get_progreso(self, obj):
     if obj.monto_objetivo == 0:
       return 0
+    progreso = (
+      obj.monto_actual /
+      obj.monto_objetivo
+    ) * 100
     return round(
-      (obj.monto_actual / obj.monto_objetivo) * 100, 2
+      min(progreso, 100),
+      2
     )
-
-# -----------------------------------------------
-# META MOVIMIENTO
-# -----------------------------------------------
-class MetaMovimientoSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = MetaMovimiento
-    fields = '__all__'
-  #Validar si el ahorro sobrepasa el valor de la meta  
-  def validate(self,data):
-    meta = data['meta']
-    monto = data['monto']
-    #Obtener el usuario autenticado
-    usuario = self.context['request'].user
-    if meta.usuario != usuario:
-      raise serializers.ValidationError("No tienes permiso para utilizar esta meta.")
-    if monto <= 0:
-      raise serializers.ValidationError("El monto debe ser mayor a 0.")
-    if self.instance is None:
-      if meta.monto_actual + monto > meta.monto_objetivo:
-        raise serializers.ValidationError("Superas el monto objetivo.")
-    return data
 
 # -----------------------------------------------
 # CATEGORIA
@@ -193,10 +160,13 @@ class CategoriaSerializer(serializers.ModelSerializer):
 # -----------------------------------------------
 # MOVIMIENTO
 # -----------------------------------------------
+
 class MovimientoSerializer(serializers.ModelSerializer):
-  # Traer la información en detalle de categoría y meta
-  categoria_detalle = CategoriaSerializer( source="categoria", read_only=True )
-  meta_detalle = MetaSerializer( source="meta", read_only=True )
+  # Información detallada de la categoría
+  categoria_detalle = CategoriaSerializer(source="categoria",read_only=True)
+  # Información detallada de la meta
+  meta_detalle = MetaSerializer(source="meta",read_only=True)
+
   class Meta:
     model = Movimiento
     fields = [
@@ -211,43 +181,55 @@ class MovimientoSerializer(serializers.ModelSerializer):
       "tipo",
       "usuario"
     ]
-    read_only_fields = ['usuario', 'categoria_detalle','meta_detalle']
-    
-  #Validar reglas
+    read_only_fields = [
+      "usuario",
+      "categoria_detalle",
+      "meta_detalle"
+    ]
+
   def validate(self, data):
-    tipo = data.get("tipo")
-    categoria = data.get("categoria")
-    meta = data.get("meta")
-    usuario = self.context['request'].user
-    # INGRESO Y GASTO
+    usuario = self.context["request"].user
+    tipo = data.get( "tipo", getattr(self.instance, "tipo", None))
+    categoria = data.get( "categoria", getattr(self.instance, "categoria", None))
+    meta = data.get( "meta", getattr(self.instance, "meta", None))
+    # INGRESO / GASTO
     if tipo in ["INGRESO", "GASTO"]:
+
       if not categoria:
-        raise serializers.ValidationError("Debe tener categoría")
+        raise serializers.ValidationError(
+          "Debe tener categoría."
+        )
+      # Un ingreso o gasto no puede tener meta
       data["meta"] = None
-      #Si la categoría no tiene propietario es global
-      if(categoria.creada is not None and categoria.creada != usuario):
-        raise serializers.ValidationError("No tienes permiso para usar esta categoría.")
-    #AHORRO
+      # Categoría global o del usuario
+      if (
+        categoria.creada is not None
+        and categoria.creada != usuario
+      ):
+        raise serializers.ValidationError(
+          "No tienes permiso para usar esta categoría."
+        )
+    # AHORRO
     elif tipo == "AHORRO":
       if not meta:
-        raise serializers.ValidationError("Debe tener meta")
+        raise serializers.ValidationError(
+          "Debe tener una meta."
+        )
       # La meta debe pertenecer al usuario
       if meta.usuario != usuario:
-        raise serializers.ValidationError("No tienes permiso para usar esta categoría.")
+        raise serializers.ValidationError(
+          "No tienes permiso para utilizar esta meta."
+        )
+      # Un ahorro no tiene categoría
       data["categoria"] = None
+      # El monto debe ser positivo
+      monto = data.get("monto")
+
+      if monto is not None and monto <= 0:
+        raise serializers.ValidationError(
+          "El monto del ahorro debe ser mayor a 0."
+        )
     return data
-  #Guardar logica
-  def create(self, validated_data):
-    movimiento = Movimiento.objects.create(**validated_data)
-    if movimiento.tipo == "AHORRO" and movimiento.meta:
-      #Sumar automaticamente a la meta
-      meta = movimiento.meta
-      meta.monto_actual += movimiento.monto
-      #Cambiar el estado cuando la meta este completa
-      if meta.monto_actual >= meta.monto_objetivo:
-        meta.estado = "COMPLETADO"
-      meta.save()
-    return movimiento
 
 # -----------------------------------------------
 # OBLIGACION

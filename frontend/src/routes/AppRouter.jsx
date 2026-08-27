@@ -5,6 +5,7 @@ import RutaProtegida from "./RutaProtegida";
 import Layout from "../layout/Layout";
 import Metas from "../pages/Metas";
 import Movimientos from "../pages/Movimientos";
+import Obligaciones from "../pages/Obligaciones";
 
 function AppRouter (){
   return(
@@ -18,8 +19,9 @@ function AppRouter (){
 
         <Route element={<Layout/>}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/metas" element={<Metas />} />
           <Route path="/movimientos" element={<Movimientos />} />
+          <Route path="/metas" element={<Metas />} />
+          <Route path="/obligaciones" element={<Obligaciones />} />
         </Route>
         
       </Route>

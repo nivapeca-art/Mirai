@@ -14,19 +14,6 @@
   color: #999999;
   font-size: 14px;
 }
-.movimientos-nuevo {
-  border: none;
-  border-radius: 10px;
-  padding: 11px 10px;
-  cursor: pointer;
-  font-weight: 600;
-  background: #1799d1;
-  color: white;
-}
-.movimientos-nuevo:hover{
-  background-color: #138fc5;
-  transition: 0.2s;
-}
 
 /* ---------- RESUMEN ---------- */
 

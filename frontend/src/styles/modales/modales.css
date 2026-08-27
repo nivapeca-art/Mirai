@@ -1,4 +1,4 @@
-/* ---------- MODALES ---------- */
+/* ---------- MODALES Y MODAL ABONO---------- */
 .modal {
   position: fixed;
   inset: 0;
@@ -9,6 +9,7 @@
   background: rgba(82, 83, 83, 0.35);
   padding: 20px;
 }
+/* Contenedor */
 .modal-contenido {
   width: min(420px, 100%);
   max-height: 90vh;
@@ -28,6 +29,7 @@
     transform: translateY(0) scale(1);
   }
 }
+/* header */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -40,6 +42,7 @@
   color: #F7AD1A;
   font-size: 17px;
 }
+/* Cerrar */
 .modal-cerrar {
   display: flex;
   align-items: center;
@@ -51,7 +54,6 @@
   padding: 4px;
   border-radius: 6px;
 }
-/* Cerrar */
 .modal-cerrar:hover {
   background: #fff1c7;
   color: #CB2A49;
@@ -135,4 +137,50 @@
   color: #c62828;
   font-size: 13px;
   text-align: center;
+}
+
+/* =========================================
+   MODAL ABONO
+========================================= */
+.abono-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 16px;
+  padding: 12px;
+  border-radius: 9px;
+  background: #fff9e9;
+}
+.abono-meta span {
+  color: #999;
+  font-size: 11px;
+}
+.abono-meta strong {
+  color: #053b52;
+  font-size: 14px;
+}
+
+/* RESUMEN */
+.abono-resumen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px;
+}
+.abono-resumen div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 11px;
+  border-radius: 8px;
+  background: white;
+  border: 1px solid #f7ad1a6d;
+}
+.abono-resumen span {
+  color: #999;
+  font-size: 10px;
+}
+.abono-resumen strong {
+  color: #053b52;
+  font-size: 13px;
 }

@@ -1,0 +1,99 @@
+.historial-meta {
+  padding: 4px 0;
+}
+
+/* ---------- RESUMEN ---------- */
+
+.historial-resumen {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px;
+}
+.historial-resumen > div {
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #f7ad1a6d;
+  border-radius: 10px;
+}
+.historial-resumen span {
+  display: block;
+  margin-bottom: 5px;
+  color: #888;
+  font-size: 11px;
+}
+.historial-resumen strong {
+  color: #053b52;
+  font-size: 16px;
+}
+
+/* ---------- LISTA ---------- */
+.historial-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 16px 16px 16px; 
+}
+.historial-item {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(5, 59, 82, 0.05);
+}
+
+/* ---------- ICONO ---------- */
+.historial-icono {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #e8f7ee;
+  color: #2e9b5b;
+  font-weight: 700;
+}
+
+/* ---------- INFORMACIÓN ---------- */
+.historial-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.historial-info strong {
+  color: #053b52;
+  font-size: 12px;
+}
+.historial-info span {
+  color: #888;
+  font-size: 10px;
+}
+
+/* ---------- MONTO ---------- */
+.historial-monto {
+  color: #2e9b5b;
+  font-size: 13px;
+}
+
+/* ---------- ESTADOS ---------- */
+.historial-estado,
+.historial-vacio,
+.historial-error {
+  margin: 0 16px;
+  padding: 25px;
+  text-align: center;
+  font-size: 12px;
+}
+.historial-estado,
+.historial-vacio {
+  color: #888;
+}
+.historial-error {
+  color: #c62828;
+  background: #fdecec;
+  border-radius: 8px;
+}
