@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 
 import ModalBase from "./ModalBase";
 
-import { crearObligacion } from "../../services/obligacionServices";
+import {
+  crearObligacion,
+  actualizarObligacion,
+} from "../../services/obligacionServices";
 import { obtenerCategorias } from "../../services/categoriaServices";
 
-function ModalObligacion({ onCerrar, onGuardado }) {
-  
+function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
   const [monto, setMonto] = useState("");
@@ -17,6 +19,8 @@ function ModalObligacion({ onCerrar, onGuardado }) {
 
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
+  // EDITAR
+  const edicion = Boolean(obligacion);
 
   // CARGAR CATEGORÍAS
   useEffect(() => {
@@ -33,12 +37,33 @@ function ModalObligacion({ onCerrar, onGuardado }) {
         (categoria) => categoria.tipo === "GASTO",
       );
       setCategorias(categoriasGasto);
-
     } catch (error) {
       console.error("Error cargando categorías:", error);
       setError("No se pudieron cargar las categorías.");
     }
   };
+  // CARGAR DATOS SI SE EDITA
+  useEffect(() => {
+    if (!obligacion) {
+      // Limpiar formulario para creación
+      setNombre("");
+      setCategoria("");
+      setMonto("");
+      setFecha("");
+      setFrecuencia("");
+      return;
+    }
+    // Cargar datos existentes
+    setNombre(obligacion.nombre || "");
+    setCategoria(obligacion.categoria || "");
+    setMonto(
+      obligacion.monto_estimado
+        ? Number(obligacion.monto_estimado).toLocaleString("es-CO")
+        : "",
+    );
+    setFecha(obligacion.fecha_limite || "");
+    setFrecuencia(obligacion.frecuencia || "");
+  }, [obligacion]);
 
   // FORMATEAR MONTO
   const formatearMonto = (valor) => {
@@ -77,36 +102,55 @@ function ModalObligacion({ onCerrar, onGuardado }) {
         monto_estimado: Number(monto.replace(/\./g, "")),
         fecha_limite: fecha,
         categoria: categoria || null,
-        frecuencia: frecuencia
+        frecuencia: frecuencia,
       };
-      console.log("OBLIGACIÓN A GUARDAR:", obligacion);
+      console.log(
+        edicion ? "OBLIGACIÓN A GUARDAR:" : "OBLIGACIÓN A CREAR",
+        obligacion,
+      );
       // CREAR OBLIGACIÓN
-      await crearObligacion(obligacion);
+      if (!edicion) {
+        await crearObligacion(obligacion);
+        // EDITAR
+      } else {
+        await actualizarObligacion(obligacion.id, obligacion);
+      }
       // Avisar al Dashboard
       if (onGuardado) {
         await onGuardado();
       }
       // Cerrar modal
       onCerrar();
-
+      
     } catch (error) {
       console.error("ERROR OBLIGACIÓN:", error);
       console.error("RESPUESTA DEL SERVIDOR:", error.response?.data);
       const respuesta = error.response?.data;
       if (respuesta) {
         const primerError = Object.values(respuesta).flat()[0];
-        setError(primerError || "No se pudo crear la obligación.");
+        setError(
+          primerError ||
+            (edicion
+              ? "No se pudo actualizar la obligación"
+              : "No se pudo crear la obligación."),
+        );
       } else {
-        setError("No se pudo crear la obligación.");
+        setError(
+          edicion
+            ? "No se pudo actualizar la obligación"
+            : "No se pudo crear la obligación.",
+        );
       }
-
     } finally {
       setGuardando(false);
     }
   };
 
   return (
-    <ModalBase titulo="Nueva obligación" onCerrar={onCerrar}>
+    <ModalBase
+      titulo={edicion ? "Editar obligación" : "Nueva obligación"}
+      onCerrar={onCerrar}
+    >
       <form onSubmit={guardarObligacion}>
         {/* NOMBRE */}
         <div className="campo-modal">
@@ -174,7 +218,12 @@ function ModalObligacion({ onCerrar, onGuardado }) {
         {/* BOTONES */}
         <div className="modal-acciones">
           {/* Cerrar */}
-          <button type="button" className="btn-cancelar" onClick={onCerrar} disabled={guardando}>
+          <button
+            type="button"
+            className="btn-cancelar"
+            onClick={onCerrar}
+            disabled={guardando}
+          >
             Cancelar
           </button>
           {/* Guardar */}

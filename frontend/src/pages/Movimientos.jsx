@@ -8,6 +8,7 @@ import ListaMovimientos from "../components/movimientos/ListaMovimientos";
 import ModalMovimiento from "../components/modales/ModalMovimiento";
 
 import "../styles/movimientos/movimientos.css";
+import { Plus } from "lucide-react";
 
 function Movimientos() {
 
@@ -107,7 +108,8 @@ function Movimientos() {
           className="boton-nuevo"
           onClick={() => setModalAbierto(true)}
         >
-          + Nuevo movimiento
+          <Plus size={20} />
+          Nuevo movimiento
         </button>
       </header>
       {/* RESUMEN */}

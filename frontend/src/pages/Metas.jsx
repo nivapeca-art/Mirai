@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-import { Calendar, Goal } from "lucide-react";
+import { Calendar, Goal, Plus } from "lucide-react";
 
 import { obtenerMetas } from "../services/metaServices";
 
@@ -103,8 +103,9 @@ function Metas() {
           <p>Define tus objetivos y haz seguimiento a tu progreso.</p>
         </div>
         {metas.length > 0 && (
-          <button className="metas-nueva" onClick={() => setModalCrear(true)}>
-            + Nueva meta
+          <button className="boton-nuevo" onClick={() => setModalCrear(true)}>
+            <Plus size={20} />
+            Nueva meta
           </button>
         )}
       </header>
