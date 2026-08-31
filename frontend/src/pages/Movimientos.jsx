@@ -8,7 +8,7 @@ import ListaMovimientos from "../components/movimientos/ListaMovimientos";
 import ModalMovimiento from "../components/modales/ModalMovimiento";
 
 import "../styles/movimientos/movimientos.css";
-import { Plus } from "lucide-react";
+import { ArrowLeftRight, Plus } from "lucide-react";
 
 function Movimientos() {
 
@@ -100,9 +100,14 @@ function Movimientos() {
     <>
       {/* HEADER */}
       <header className="movimientos">
-        <div>
-          <h1>Movimientos</h1>
-          <p>Consulta y administra tus ingresos, gastos y ahorros.</p>
+        <div className="titulo-movimiento">
+          <div className="icono-titulo-movimiento">
+            <ArrowLeftRight size={20}/>
+          </div>
+          <div>
+            <h1>Movimientos</h1>
+            <p>Consulta y administra tus ingresos, gastos y ahorros.</p>
+          </div>
         </div>
         <button
           className="boton-nuevo"

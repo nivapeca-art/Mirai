@@ -1,9 +1,19 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-import { Calendar, Goal, Plus } from "lucide-react";
+import {
+  Calendar,
+  Goal,
+  Plus,
+  Target,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
-import { obtenerMetas } from "../services/metaServices";
+import {
+  eliminarMeta,
+  obtenerMetas,
+} from "../services/metaServices";
 
 import ModalMeta from "../components/modales/ModalMeta";
 import ModalAbono from "../components/modales/ModalAbono";
@@ -13,24 +23,30 @@ import ModalProyeccion from "../components/modales/ModalProyeccion";
 import "../styles/metas/metas.css";
 
 function Metas() {
-
   const localizar = useLocation();
+
   const [metas, setMetas] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  // Modal para crear meta
-  const [modalCrear, setModalCrear] = useState(false);
+  // Modal para crear o editar meta
+  // null = cerrado
+  // {} = crear
+  // meta = editar
+  const [metaEditar, setMetaEditar] = useState(null);
+
   // Modal para abono
   const [metaAbono, setMetaAbono] = useState(null);
+
   // Modal para ver historial
-  const [metaHistorial, setMetaHistorial] = useState(false);
+  const [metaHistorial, setMetaHistorial] = useState(null);
+
   // Modal para proyección
   const [metaProyeccion, setMetaProyeccion] = useState(null);
 
-  // Abrir el modal al hacer click desde metas en el dashboard
+  // Abrir modal de creación desde el dashboard
   useEffect(() => {
     if (localizar.state?.abrirModal) {
-      setModalCrear(true);
+      setMetaEditar({});
     }
   }, [localizar.state]);
 
@@ -42,35 +58,72 @@ function Metas() {
   const cargarMetas = async () => {
     try {
       setCargando(true);
+
       const data = await obtenerMetas();
-      // Ordenar primero las que están en proceso y después las completadas
+
+      // Ordenar primero las que están en proceso
+      // y después las completadas/canceladas
       const metasOrdenadas = [...data].sort((a, b) => {
-        if (a.estado === "EN_PROCESO" && b.estado !== "EN_PROCESO") {
+        if (
+          a.estado === "EN_PROCESO" &&
+          b.estado !== "EN_PROCESO"
+        ) {
           return -1;
         }
-        if (a.estado !== "EN_PROCESO" && b.estado === "EN_PROCESO") {
+
+        if (
+          a.estado !== "EN_PROCESO" &&
+          b.estado === "EN_PROCESO"
+        ) {
           return 1;
         }
+
         return a.nombre.localeCompare(b.nombre);
       });
+
       setMetas(metasOrdenadas);
-      
     } catch (error) {
       console.error("Error al obtener metas:", error);
-
     } finally {
       setCargando(false);
     }
   };
 
+  // ELIMINAR META
+  const handleEliminarMeta = async (meta) => {
+    const confirmar = window.confirm(
+      `¿Estás seguro de que quieres eliminar la meta "${meta.nombre}"?`,
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      await eliminarMeta(meta.id);
+      await cargarMetas();
+    } catch (error) {
+      console.error("Error al eliminar meta:", error);
+      alert("No se pudo eliminar la meta.");
+    }
+  };
+
+  // EDITAR META
+  const editarMeta = (meta) => {
+    setMetaEditar(meta);
+  };
+
   // CALCULAR PROGRESO
   const obtenerProgreso = (meta) => {
-    if (meta.monto_objetivo <= 0) {
+    if (Number(meta.monto_objetivo) <= 0) {
       return 0;
     }
+
     return Math.min(
       100,
-      (Number(meta.monto_actual) / Number(meta.monto_objetivo)) * 100,
+      (Number(meta.monto_actual) /
+        Number(meta.monto_objetivo)) *
+        100,
     );
   };
 
@@ -94,39 +147,59 @@ function Metas() {
   };
 
   return (
-    <>
+    <div className="pagina-metas">
       {/* HEADER */}
       <header className="metas-header">
-        <div>
-          <h1>Metas</h1>
+        <div className="titulo-metas">
+          <div className="icono-titulo-metas">
+            <Target size={25} />
+          </div>
 
-          <p>Define tus objetivos y haz seguimiento a tu progreso.</p>
+          <div>
+            <h1>Metas</h1>
+            <p>
+              Define tus objetivos y haz seguimiento a tu
+              progreso.
+            </p>
+          </div>
         </div>
+
         {metas.length > 0 && (
-          <button className="boton-nuevo" onClick={() => setModalCrear(true)}>
-            <Plus size={20} />
-            Nueva meta
-          </button>
+          <div className="acciones">
+            <button
+              className="boton-nuevo"
+              onClick={() => setMetaEditar({})}
+            >
+              <Plus size={20} />
+              Nueva meta
+            </button>
+          </div>
         )}
       </header>
+
       {/* CONTENIDO */}
       <section className="metas-contenido">
         {cargando ? (
-          <div className="metas-estado">Cargando metas...</div>
+          <div className="metas-estado">
+            Cargando metas...
+          </div>
         ) : metas.length === 0 ? (
           /* SIN METAS */
           <div className="metas-vacio">
             <div className="metas-vacio-icono">
               <Goal size={30} />
             </div>
+
             <h2>No tienes metas todavía</h2>
+
             <p>
-              Crea una meta para comenzar a organizar tus objetivos y hacer
-              seguimiento a tus ahorros.
+              Crea una meta para comenzar a organizar tus
+              objetivos y hacer seguimiento a tus ahorros.
             </p>
+
             <button
               className="metas-vacio-boton"
-              onClick={() => setModalCrear(true)}
+              onClick={() => setMetaEditar({})}
             >
               Crear mi primera meta
             </button>
@@ -146,32 +219,74 @@ function Metas() {
                   <div className="meta-card-header">
                     <div className="meta-card-titulo">
                       <h2>{meta.nombre}</h2>
+
                       <span className="meta-estado">
                         {obtenerEstado(meta.estado)}
                       </span>
                     </div>
+
+                    {/* ACCIONES DE LA META */}
+                    <div className="meta-acciones-importantes">
+                      <button
+                        type="button"
+                        className="meta-editar"
+                        onClick={() => editarMeta(meta)}
+                        title="Editar meta"
+                        aria-label={`Editar meta ${meta.nombre}`}
+                      >
+                        <Pencil size={15} />
+                      </button>
+
+                      <button
+                        type="button"
+                        className="meta-eliminar"
+                        onClick={() =>
+                          handleEliminarMeta(meta)
+                        }
+                        title="Eliminar meta"
+                        aria-label={`Eliminar meta ${meta.nombre}`}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   </div>
+
                   {/* DESCRIPCIÓN */}
                   {meta.descripcion && (
-                    <p className="meta-descripcion">{meta.descripcion}</p>
+                    <p className="meta-descripcion">
+                      {meta.descripcion}
+                    </p>
                   )}
+
                   {/* MONTOS */}
                   <div className="meta-montos">
                     <div>
                       <span>Ahorrado</span>
-                      <strong>${formatearMonto(meta.monto_actual)}</strong>
+
+                      <strong>
+                        ${formatearMonto(meta.monto_actual)}
+                      </strong>
                     </div>
+
                     <div>
                       <span>Objetivo</span>
-                      <strong>${formatearMonto(meta.monto_objetivo)}</strong>
+
+                      <strong>
+                        ${formatearMonto(meta.monto_objetivo)}
+                      </strong>
                     </div>
                   </div>
+
                   {/* PROGRESO */}
                   <div className="meta-progreso">
                     <div className="meta-progreso-info">
                       <span>Progreso</span>
-                      <strong>{progreso.toFixed(0)}%</strong>
+
+                      <strong>
+                        {progreso.toFixed(0)}%
+                      </strong>
                     </div>
+
                     <div className="meta-progreso-barra">
                       <div
                         className="meta-progreso-valor"
@@ -181,34 +296,46 @@ function Metas() {
                       />
                     </div>
                   </div>
+
                   {/* FECHA */}
                   {meta.fecha_limite && (
                     <div className="meta-fecha">
-                      <Calendar size={16} /> Fecha límite:{" "}
+                      <Calendar size={16} />
+
+                      Fecha límite:{" "}
                       {new Date(
                         `${meta.fecha_limite}T00:00:00`,
                       ).toLocaleDateString("es-CO")}
                     </div>
                   )}
+
                   {/* ACCIONES */}
                   <div className="meta-acciones">
                     {meta.estado === "EN_PROCESO" && (
                       <button
                         className="meta-abono"
-                        onClick={() => setMetaAbono(meta)}
+                        onClick={() =>
+                          setMetaAbono(meta)
+                        }
                       >
                         + Hacer abono
                       </button>
                     )}
+
                     <button
                       className="meta-detalle"
-                      onClick={() => setMetaHistorial(meta)}
+                      onClick={() =>
+                        setMetaHistorial(meta)
+                      }
                     >
                       Ver más
                     </button>
+
                     <button
                       className="meta-proyeccion"
-                      onClick={() => setMetaProyeccion(meta)}
+                      onClick={() =>
+                        setMetaProyeccion(meta)
+                      }
                     >
                       Proyección
                     </button>
@@ -220,35 +347,37 @@ function Metas() {
         )}
       </section>
 
-      {/* MODAL CREAR META */}
-      {modalCrear && (
+      {/* MODAL CREAR / EDITAR META */}
+      {metaEditar !== null && (
         <ModalMeta
-          onCerrar={() => setModalCrear(false)}
-          onGuardado={async () => {
-            await cargarMetas();
-          }}
+          meta={
+            Object.keys(metaEditar).length === 0
+              ? null
+              : metaEditar
+          }
+          onCerrar={() => setMetaEditar(null)}
+          onGuardado={cargarMetas}
         />
       )}
+
       {/* MODAL ABONO */}
       {metaAbono && (
         <ModalAbono
           meta={metaAbono}
           onCerrar={() => setMetaAbono(null)}
-          onGuardado={async () => {
-            await cargarMetas();
-          }}
+          onGuardado={cargarMetas}
         />
       )}
+
       {/* MODAL HISTORIAL */}
       {metaHistorial && (
         <ModalHistorialMeta
           meta={metaHistorial}
           onCerrar={() => setMetaHistorial(null)}
-          onGuardado={async () => {
-            await cargarMetas();
-          }}
+          onGuardado={cargarMetas}
         />
       )}
+
       {/* MODAL PROYECCIÓN */}
       {metaProyeccion && (
         <ModalProyeccion
@@ -256,9 +385,8 @@ function Metas() {
           onCerrar={() => setMetaProyeccion(null)}
         />
       )}
-    </>
+    </div>
   );
-  
 }
 
 export default Metas;

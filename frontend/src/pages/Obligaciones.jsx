@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
-import { Plus} from "lucide-react";
+import { CalendarPlus, Plus} from "lucide-react";
 
 import ResumenObligaciones from "../components/obligaciones/ResumenObligaciones";
 import TarjetaObligacion from "../components/obligaciones/TarjetaObligacion";
+import ModalObligacion from "../components/modales/ModalObligacion";
 
-import {
-  obtenerObligaciones,
-  actualizarObligacion,
-} from "../services/obligacionServices";
-
+import { obtenerObligaciones, actualizarObligacion } from "../services/obligacionServices";
 import { obtenerCategorias } from "../services/categoriaServices";
 
 import "../styles/obligaciones/obligaciones.css";
-import ModalObligacion from "../components/modales/ModalObligacion";
 
 function Obligaciones() {
 
@@ -141,22 +137,27 @@ function Obligaciones() {
           ================================================== */}
 
       <div className="encabezado-pagina">
-        <div>
-          <h1>Obligaciones</h1>
-
-          <p>Lleva el control de tus pagos y compromisos.</p>
+        <div className="titulo-obligacion">
+          <div className="icono-titulo-obligacion">
+            <CalendarPlus size={20}/>
+          </div>
+          <div>
+            <h1>Obligaciones</h1>
+            <p>Lleva el control de tus pagos y compromisos.</p>
+          </div>
         </div>
-
-        <div className="acciones-encabezado">
-          <button
-            className="boton-nuevo"
-            onClick={() => {setMostrarModal(true); setObligacionEditar(null);}}
-          >
-            <Plus size={20} />
-            Nueva obligación
-          </button>
+        {obligaciones.length > 0 &&(
+          <div className="acciones-encabezado">
+            <button
+              className="boton-nuevo"
+              onClick={() => {setMostrarModal(true); setObligacionEditar(null);}}
+            >
+              <Plus size={20} />
+              Nueva obligación
+            </button>
+          </div>
+        )}
         </div>
-      </div>
 
       {/* ==================================================
           ERROR
@@ -221,7 +222,7 @@ function Obligaciones() {
 
             {filtro === "total" && (
               <button
-                className="btn-primario"
+                className="boton-nuevo"
                 onClick={() => setMostrarModal(true)}
               >
                 <Plus size={20} />

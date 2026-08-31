@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 
 import { obtenerDashboard } from "../services/dashboardServices";
@@ -12,11 +11,10 @@ import PanelLateral from "../components/dashboard/PanelLateral";
 import "../styles/dashboard/dashboard.css";
 
 function Dashboard() {
-
   const [dashboard, setDashboard] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [periodo, setPeriodo] = useState("mes");
-  
+
   // Cargar datos
   useEffect(() => {
     cargarDashboard();
@@ -33,39 +31,54 @@ function Dashboard() {
       setCargando(false);
     }
   };
-  
+
   // Fecha actual
   const fechaActual = new Date().toLocaleDateString("es-CO", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-  
+
   // Tiempo del login realizado
   const obtenerMensajeUltimoAcceso = (ultimoAcceso) => {
     if (!ultimoAcceso) {
       return "Primera vez que haces login";
     }
+
     const ahora = new Date();
     const fecha = new Date(ultimoAcceso);
+
     const diferenciaMs = ahora - fecha;
     const dias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
+
+    const hora = fecha.toLocaleTimeString("es-CO", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
     if (dias === 0) {
-      return "Último acceso: Hoy";
+      return `Último acceso: Hoy a las ${hora}`;
     }
+
     if (dias === 1) {
-      return "Último acceso: Ayer";
+      return `Último acceso: Ayer a las ${hora}`;
     }
+
     if (dias < 7) {
       return `Último acceso: Hace ${dias} días`;
     }
-    const semanas = Math.floor(dias / 7);
+
     if (dias < 30) {
+      const semanas = Math.floor(dias / 7);
+
       return semanas === 1
         ? "Último acceso: Hace 1 semana"
         : `Último acceso: Hace ${semanas} semanas`;
     }
+
     const meses = Math.floor(dias / 30);
+
     return meses === 1
       ? "Último acceso: Hace 1 mes"
       : `Último acceso: Hace ${meses} meses`;
@@ -114,7 +127,7 @@ function Dashboard() {
         <MetasDash dashboard={dashboard} />
       </div>
       {/* PANEL LATERAL */}
-        <PanelLateral dashboard={dashboard} onGuardado={cargarDashboard} />
+      <PanelLateral dashboard={dashboard} onGuardado={cargarDashboard} />
     </div>
   );
 }

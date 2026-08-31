@@ -23,8 +23,9 @@ select {
 }
 h1 {
   color: #053b52;
-  margin: 0;
-  font-size: 24px;
+  margin: 0 0 4px;
+  font-size: 27px;
+  font-weight: 700;
   text-transform: uppercase;
 }
 h2 {
@@ -32,13 +33,13 @@ h2 {
   color: #053b52;
   font-size: 16px;
 }
-.meta,
+.pagina-metas,
 .dashboard,
 .movimientos,
 .pagina-obligaciones,
 .graficas,
 .reportePDF {
-  padding: 10px;
+  padding: 28px;
 }
 
 /* 🟢 Variación favorable */

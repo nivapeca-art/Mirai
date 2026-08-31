@@ -1,50 +1,51 @@
 /* =========================================
    HEADER
 ========================================= */
-
 .metas-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  justify-content: space-between;
+  gap: 25px;
+  margin-bottom: 22px;
 }
-
 .metas-header h1 {
-  margin: 0;
-  font-size: 24px;
+  margin: 0 0 4px;
   color: #053b52;
+  font-size: 27px;
+  font-weight: 700;
 }
-
 .metas-header p {
-  margin: 6px 0 0;
+  margin: 0;
   color: #999999;
-  font-size: 14px;
+  font-size: 13px;
+}
+.titulo-metas{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.icono-titulo-metas{
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #edf5fc;
+  color: #3f80c9;
 }
 
-.metas-nueva {
-  border: none;
-  border-radius: 10px;
-  padding: 11px 14px;
-  cursor: pointer;
-  font-weight: 600;
-  background: #1799d1;
-  color: white;
-  transition: 0.2s ease;
+.acciones{
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-
-.metas-nueva:hover {
-  background: #138fc5;
-}
-
-
 /* =========================================
    CONTENIDO
 ========================================= */
-
 .metas-contenido {
   width: 100%;
 }
-
 
 /* =========================================
    SIN METAS
@@ -279,13 +280,13 @@
 }
 
 .meta-card.cancelado::before {
-  background: #d94a4a;
+  background: #c62828;
 }
 
 .meta-card.cancelado .meta-estado {
   background: #fdecec;
 
-  color: #d94a4a;
+  color: #c62828;
 }
 
 
@@ -424,6 +425,116 @@
    ACCIONES
 ========================================= */
 
+.meta-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.meta-card-titulo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.meta-card-titulo h2 {
+  margin: 0;
+
+  color: #053b52;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================
+   BOTONES EDITAR / ELIMINAR
+========================================= */
+
+.meta-acciones-importantes {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  flex-shrink: 0;
+}
+
+.meta-acciones-importantes button {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border-radius: 7px;
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+/* Editar */
+
+.meta-editar {
+  border: 1px solid #053b5238;
+
+  background: white;
+
+  color: #053b52;
+}
+
+.meta-editar:hover {
+  background: #edfaff;
+
+  border-color: #053b5270;
+
+  color: #053b52;
+
+  transform: translateY(-1px);
+}
+
+
+/* Eliminar */
+
+.meta-eliminar {
+  border: 1px solid #f4606045;
+
+  background: white;
+
+  color: #e04b4b;
+}
+
+.meta-eliminar:hover {
+  background: #fff0f0;
+
+  border-color: #f46060;
+
+  color: #c62828;
+
+  transform: translateY(-1px);
+}
+
+
+/* =========================================
+   ACCIONES INFERIORES
+========================================= */
+
 .meta-acciones {
   display: flex;
 
@@ -457,32 +568,45 @@
 
 .meta-abono {
   border: 1px solid #00924452;
+
   background: white;
+
   color: #009245;
 }
+
 .meta-abono:hover {
   background: #f2fff5;
 }
+
+
 /* Ver detalle */
+
 .meta-detalle {
   border: 1px solid #f7ad1a6d;
+
   background: white;
+
   color: #c98600;
 }
+
 .meta-detalle:hover {
   background: #fff9e9;
 }
+
+
 /* Ver proyección */
+
 .meta-proyeccion {
   border: 1px solid #053b5277;
+
   background: white;
+
   color: #053b52;
 }
+
 .meta-proyeccion:hover {
   background: #edfaff;
 }
-
-
 
 /* =========================================
    CARGANDO

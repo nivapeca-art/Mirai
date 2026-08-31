@@ -51,7 +51,6 @@ function ModalHistorialMeta({ meta, onCerrar }) {
       onCerrar={onCerrar}
     >
       <div className="historial-meta">
-
         {/* RESUMEN */}
         <div className="historial-resumen">
           <div>
