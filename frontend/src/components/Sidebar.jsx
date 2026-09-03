@@ -40,7 +40,7 @@ function Sidebar() {
         > <ChartColumn className="iconos-sidebar" size={20} /> <span>Grafícas</span>
         </NavLink>
         <NavLink
-          to="/generarPDF" className={({ isActive }) => isActive ? "activo" : "" }
+          to="/reportesPDF" className={({ isActive }) => isActive ? "activo" : "" }
         > <FileText className="iconos-sidebar" size={20} /> <span>Reportes</span>
         </NavLink>
         <button onClick={cerrarSesion} className="logout"> <LogOut className="iconos-sidebar" size={20}/> <span>Salir</span> </button>

@@ -7,6 +7,8 @@ import Metas from "../pages/Metas";
 import Movimientos from "../pages/Movimientos";
 import Obligaciones from "../pages/Obligaciones";
 import Graficas from "../pages/Graficas";
+import Reporte from "../pages/Reporte";
+
 
 function AppRouter (){
   return(
@@ -24,6 +26,7 @@ function AppRouter (){
           <Route path="/metas" element={<Metas />} />
           <Route path="/graficas" element={<Graficas />} />
           <Route path="/obligaciones" element={<Obligaciones />} />
+          <Route path="/reportesPDF" element={<Reporte/>}/>
         </Route>
         
       </Route>

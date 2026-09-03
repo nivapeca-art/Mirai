@@ -4,81 +4,108 @@ import ModalBase from "./ModalBase";
 
 import { crearMovimiento } from "../../services/movimientoServices";
 
+import {
+  obtenerMonedaUsuario,
+  formatearMonto,
+  formatearMontoInput,
+  convertirMontoParaAPI,
+} from "../../utils/moneda";
+
 function ModalAbono({ meta, onCerrar, onGuardado }) {
   const [monto, setMonto] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
 
-  // FORMATEAR MONTO
-  const formatearMonto = (valor) => {
-    const numero = valor.replace(/\D/g, "");
-    if (!numero) {
-      return "";
-    }
-    return Number(numero).toLocaleString("es-CO");
-  };
+  // =========================================
+  // MONEDA DEL USUARIO
+  // =========================================
 
-  // MONTO ACTUAL
-  const montoActual = Number(meta.monto_actual);
+  const moneda = obtenerMonedaUsuario();
 
-  // MONTO OBJETIVO
-  const montoObjetivo = Number(meta.monto_objetivo);
+  // =========================================
+  // MONTOS DE LA META
+  // =========================================
 
+  const montoActual = Number(meta.monto_actual || 0);
+
+  const montoObjetivo = Number(meta.monto_objetivo || 0);
+
+  // =========================================
   // MONTO QUE FALTA
+  // =========================================
+
   const montoFaltante = Math.max(
     0,
     montoObjetivo - montoActual
   );
 
+  // =========================================
   // GUARDAR ABONO
+  // =========================================
+
   const guardarAbono = async (e) => {
     e.preventDefault();
+
     setError("");
-    const montoNumerico = Number(
-      monto.replace(/\./g, "")
+
+    const montoNumerico = convertirMontoParaAPI(
+      monto,
+      moneda.codigo
     );
+
     // VALIDAR MONTO
+
     if (!monto || montoNumerico <= 0) {
       setError("El monto debe ser mayor a 0.");
       return;
     }
+
     // EVITAR SUPERAR LA META
+
     if (montoNumerico > montoFaltante) {
       setError(
-        `El abono no puede superar los $${montoFaltante.toLocaleString(
-          "es-CO"
+        `El abono no puede superar los ${formatearMonto(
+          montoFaltante,
+          moneda.codigo
         )} que faltan para completar la meta.`
       );
+
       return;
     }
 
     try {
       setGuardando(true);
+
       const movimiento = {
         meta: meta.id,
         monto: montoNumerico,
         fecha: new Date().toISOString().split("T")[0],
-        tipo: "AHORRO"
+        tipo: "AHORRO",
       };
+
       await crearMovimiento(movimiento);
+
       // AVISAR A METAS
+
       if (onGuardado) {
         await onGuardado();
       }
-      onCerrar();
 
+      onCerrar();
     } catch (error) {
       console.error("Error creando abono:", error);
+
       const respuesta = error.response?.data;
+
       if (respuesta) {
         const primerError = Object.values(respuesta).flat()[0];
+
         setError(
           primerError || "No se pudo realizar el abono."
         );
       } else {
         setError("No se pudo realizar el abono.");
       }
-
     } finally {
       setGuardando(false);
     }
@@ -92,45 +119,81 @@ function ModalAbono({ meta, onCerrar, onGuardado }) {
       <form onSubmit={guardarAbono}>
 
         {/* META */}
+
         <div className="abono-meta">
           <span>Meta</span>
-          <strong>{meta.nombre}</strong>
+
+          <strong>
+            {meta.nombre}
+          </strong>
         </div>
+
         {/* INFORMACIÓN */}
+
         <div className="abono-resumen">
+
           <div>
             <span>Ahorrado</span>
+
             <strong>
-              ${montoActual.toLocaleString("es-CO")}
+              {formatearMonto(
+                montoActual,
+                moneda.codigo
+              )}
             </strong>
           </div>
+
           <div>
             <span>Falta</span>
+
             <strong>
-              ${montoFaltante.toLocaleString("es-CO")}
+              {formatearMonto(
+                montoFaltante,
+                moneda.codigo
+              )}
             </strong>
           </div>
+
         </div>
+
         {/* MONTO */}
+
         <div className="campo-modal">
-          <label>Monto del abono</label>
+
+          <label>
+            Monto del abono
+          </label>
+
           <input
             type="text"
-            inputMode="numeric"
+            inputMode="decimal"
             placeholder="0"
             value={monto}
             onChange={(e) => {
               setMonto(
-                formatearMonto(e.target.value)
+                formatearMontoInput(
+                  e.target.value,
+                  moneda.codigo
+                )
               );
             }}
             autoFocus
           />
+
         </div>
+
         {/* ERROR */}
-        {error && (<p className="error">{error}</p>)}
+
+        {error && (
+          <p className="error">
+            {error}
+          </p>
+        )}
+
         {/* BOTONES */}
+
         <div className="modal-acciones">
+
           <button
             type="button"
             className="btn-cancelar"
@@ -139,6 +202,7 @@ function ModalAbono({ meta, onCerrar, onGuardado }) {
           >
             Cancelar
           </button>
+
           <button
             type="submit"
             className="btn-guardar"
@@ -148,6 +212,7 @@ function ModalAbono({ meta, onCerrar, onGuardado }) {
               ? "Guardando..."
               : "Hacer abono"}
           </button>
+
         </div>
 
       </form>
@@ -156,3 +221,4 @@ function ModalAbono({ meta, onCerrar, onGuardado }) {
 }
 
 export default ModalAbono;
+

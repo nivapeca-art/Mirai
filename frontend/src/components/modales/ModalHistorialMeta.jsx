@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import ModalBase from "./ModalBase";
 import { obtenerMovimientos } from "../../services/movimientoServices";
+import { obtenerMonedaUsuario, formatearMonto } from "../../utils/moneda";
+
 import "../../styles/modales/modalHistorial.css";
 
 function ModalHistorialMeta({ meta, onCerrar }) {
@@ -8,6 +10,7 @@ function ModalHistorialMeta({ meta, onCerrar }) {
   const [abonos, setAbonos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const moneda = obtenerMonedaUsuario();
 
   useEffect(() => {
     if (meta?.id) {
@@ -56,7 +59,7 @@ function ModalHistorialMeta({ meta, onCerrar }) {
           <div>
             <span>Total ahorrado</span>
             <strong>
-              ${totalAbonos.toLocaleString("es-CO")}
+              {formatearMonto(totalAbonos,moneda.codigo)}
             </strong>
           </div>
           <div>
@@ -111,8 +114,8 @@ function ModalHistorialMeta({ meta, onCerrar }) {
                 </div>
 
                 <strong className="historial-monto">
-                  +$
-                  {Number(abono.monto).toLocaleString("es-CO")}
+                  +
+                  {formatearMonto(abono.monto,moneda.codigo)}
                 </strong>
 
               </div>

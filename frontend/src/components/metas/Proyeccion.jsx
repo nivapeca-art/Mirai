@@ -13,30 +13,36 @@ import {
 
 import { obtenerProyeccion } from "../../services/proyeccionServices";
 
-function Proyeccion() {
+import {
+    obtenerMonedaUsuario,
+    formatearMonto,
+} from "../../utils/moneda";
 
+function Proyeccion() {
     const [proyeccion, setProyeccion] = useState(null);
     const [meses, setMeses] = useState(6);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
 
-    // -----------------------------------------------
+    // =========================================
+    // OBTENER MONEDA DEL USUARIO
+    // =========================================
+
+    const moneda = obtenerMonedaUsuario();
+
+    // =========================================
     // OBTENER PROYECCIÓN
-    // -----------------------------------------------
+    // =========================================
 
     const cargarProyeccion = async () => {
-
         try {
-
             setCargando(true);
             setError("");
 
             const datos = await obtenerProyeccion(meses);
 
             setProyeccion(datos);
-
         } catch (error) {
-
             console.error(
                 "Error obteniendo proyección:",
                 error
@@ -45,27 +51,22 @@ function Proyeccion() {
             setError(
                 "No se pudo cargar la proyección."
             );
-
         } finally {
-
             setCargando(false);
-
         }
     };
 
-    // -----------------------------------------------
+    // =========================================
     // CARGAR CUANDO CAMBIA EL PERIODO
-    // -----------------------------------------------
+    // =========================================
 
     useEffect(() => {
-
         cargarProyeccion();
-
     }, [meses]);
 
-    // -----------------------------------------------
+    // =========================================
     // CARGANDO
-    // -----------------------------------------------
+    // =========================================
 
     if (cargando) {
         return (
@@ -75,9 +76,9 @@ function Proyeccion() {
         );
     }
 
-    // -----------------------------------------------
+    // =========================================
     // ERROR
-    // -----------------------------------------------
+    // =========================================
 
     if (error) {
         return (
@@ -87,9 +88,9 @@ function Proyeccion() {
         );
     }
 
-    // -----------------------------------------------
+    // =========================================
     // DATOS
-    // -----------------------------------------------
+    // =========================================
 
     const datosGrafica =
         proyeccion?.proyeccion || [];
@@ -97,12 +98,11 @@ function Proyeccion() {
     const promedio =
         proyeccion?.promedio_mensual || {};
 
-    // -----------------------------------------------
+    // =========================================
     // RENDER
-    // -----------------------------------------------
+    // =========================================
 
     return (
-
         <section className="proyeccion">
 
             {/* ------------------------------------ */}
@@ -110,25 +110,23 @@ function Proyeccion() {
             {/* ------------------------------------ */}
 
             <div className="proyeccion-header">
-
                 <div>
-
                     <h2>Proyección financiera</h2>
 
                     <p>
                         Estimación basada en tu
                         comportamiento financiero.
                     </p>
-
                 </div>
 
                 <select
                     value={meses}
                     onChange={(e) =>
-                        setMeses(Number(e.target.value))
+                        setMeses(
+                            Number(e.target.value)
+                        )
                     }
                 >
-
                     <option value={3}>
                         3 meses
                     </option>
@@ -140,9 +138,7 @@ function Proyeccion() {
                     <option value={12}>
                         12 meses
                     </option>
-
                 </select>
-
             </div>
 
             {/* ------------------------------------ */}
@@ -152,59 +148,55 @@ function Proyeccion() {
             <div className="proyeccion-resumen">
 
                 <div className="proyeccion-card">
-
                     <span>
                         Ingresos promedio
                     </span>
 
                     <strong>
-                        ${Number(
-                            promedio.ingresos || 0
-                        ).toLocaleString("es-CO")}
+                        {formatearMonto(
+                            promedio.ingresos || 0,
+                            moneda.codigo
+                        )}
                     </strong>
-
                 </div>
 
                 <div className="proyeccion-card">
-
                     <span>
                         Gastos promedio
                     </span>
 
                     <strong>
-                        ${Number(
-                            promedio.gastos || 0
-                        ).toLocaleString("es-CO")}
+                        {formatearMonto(
+                            promedio.gastos || 0,
+                            moneda.codigo
+                        )}
                     </strong>
-
                 </div>
 
                 <div className="proyeccion-card">
-
                     <span>
                         Ahorro promedio
                     </span>
 
                     <strong>
-                        ${Number(
-                            promedio.ahorros || 0
-                        ).toLocaleString("es-CO")}
+                        {formatearMonto(
+                            promedio.ahorros || 0,
+                            moneda.codigo
+                        )}
                     </strong>
-
                 </div>
 
                 <div className="proyeccion-card">
-
                     <span>
                         Saldo promedio
                     </span>
 
                     <strong>
-                        ${Number(
-                            promedio.saldo || 0
-                        ).toLocaleString("es-CO")}
+                        {formatearMonto(
+                            promedio.saldo || 0,
+                            moneda.codigo
+                        )}
                     </strong>
-
                 </div>
 
             </div>
@@ -219,7 +211,6 @@ function Proyeccion() {
                     width="100%"
                     height={350}
                 >
-
                     <LineChart
                         data={datosGrafica}
                     >
@@ -236,11 +227,10 @@ function Proyeccion() {
 
                         <Tooltip
                             formatter={(value) =>
-                                `$${Number(
-                                    value
-                                ).toLocaleString(
-                                    "es-CO"
-                                )}`
+                                formatearMonto(
+                                    value,
+                                    moneda.codigo
+                                )
                             }
                         />
 
@@ -275,7 +265,6 @@ function Proyeccion() {
                         />
 
                     </LineChart>
-
                 </ResponsiveContainer>
 
             </div>

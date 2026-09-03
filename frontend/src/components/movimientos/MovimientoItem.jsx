@@ -1,10 +1,10 @@
 import { ArrowDownLeft, ArrowUpRight, PiggyBank } from "lucide-react";
 
-function MovimientoItem({ movimiento }) {
+import { obtenerMonedaUsuario, formatearMonto } from "../../utils/moneda";
 
-  const formatearMoneda = (valor) => {
-    return `$ ${Number(valor || 0).toLocaleString("es-CO")}`;
-  };
+function MovimientoItem({ movimiento }) {
+  const moneda = obtenerMonedaUsuario();
+  const codigoMoneda = moneda?.codigo || "COP";
 
   const obtenerInformacion = () => {
     if (movimiento.tipo === "INGRESO") {
@@ -41,31 +41,29 @@ function MovimientoItem({ movimiento }) {
       <div className={`movimiento-icono ${informacion.clase}`}>
         {informacion.icono}
       </div>
+
       {/* INFORMACIÓN */}
       <div className="movimiento-info">
         <strong>{informacion.titulo}</strong>
-        <span>
-          {movimiento.descripcion || movimiento.tipo}
-        </span>
+
+        <span>{movimiento.descripcion || movimiento.tipo}</span>
       </div>
+
       {/* FECHA */}
       <span className="movimiento-fecha">
-        {new Date(`${movimiento.fecha}T00:00:00`).toLocaleDateString(
-          "es-CO",
-          {
-            day: "numeric",
-            month: "short",
-          }
-        )}
+        {new Date(`${movimiento.fecha}T00:00:00`).toLocaleDateString("es-CO", {
+          day: "numeric",
+          month: "short",
+        })}
       </span>
+
       {/* MONTO */}
       <strong className={`movimiento-monto ${informacion.clase}`}>
         {informacion.signo}
-        {formatearMoneda(movimiento.monto)}
+        {formatearMonto(movimiento.monto, codigoMoneda)}
       </strong>
     </article>
   );
-  
 }
 
 export default MovimientoItem;

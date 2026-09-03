@@ -52,15 +52,11 @@ class LoginView(TokenObtainPairView):
 # -----------------------------------------------
 # METAS
 # -----------------------------------------------
-
 class MetaViewSet(ModelViewSet):
-
   permission_classes = [IsAuthenticated]
   serializer_class = MetaSerializer
-
   def get_queryset(self):
     return Meta.objects.filter(usuario=self.request.user)
-
   def perform_create(self, serializer):
     serializer.save(usuario=self.request.user)
 
@@ -80,14 +76,11 @@ class CategoriaViewSet (ModelViewSet):
 # -----------------------------------------------
 # MOVIMIENTOS
 # -----------------------------------------------
-
 class MovimientoViewSet(ModelViewSet):
   permission_classes = [IsAuthenticated]
   serializer_class = MovimientoSerializer
-
   def get_queryset(self):
     return Movimiento.objects.filter(usuario=self.request.user)
-
   # CREAR
   def perform_create(self, serializer):
     movimiento = serializer.save(usuario=self.request.user)
@@ -103,7 +96,6 @@ class MovimientoViewSet(ModelViewSet):
       ):
         meta.estado = "COMPLETADO"
       meta.save()
-
   # EDITAR
   def perform_update(self, serializer):
     movimiento_anterior = self.get_object()
@@ -113,7 +105,6 @@ class MovimientoViewSet(ModelViewSet):
     monto_anterior = movimiento_anterior.monto
     # Guardar cambios
     movimiento = serializer.save()
-
     # QUITAR EFECTO DEL MOVIMIENTO ANTERIOR
     if (
       tipo_anterior == "AHORRO"
@@ -132,7 +123,6 @@ class MovimientoViewSet(ModelViewSet):
       else:
         meta_anterior.estado = "EN_PROCESO"
       meta_anterior.save()
-
       # APLICAR NUEVO EFECTO
       if (
         movimiento.tipo == "AHORRO"
@@ -151,7 +141,6 @@ class MovimientoViewSet(ModelViewSet):
 
   # ELIMINAR
   def perform_destroy(self, instance):
-
     # Si es un ahorro asociado a una meta
     if (
       instance.tipo == "AHORRO" and instance.meta
@@ -217,73 +206,52 @@ class DashboardView(APIView):
 # -----------------------------------------------
 class ReportePDFView(APIView):
   permission_classes = [IsAuthenticated]
-
   def get(self, request):
-    periodo = request.query_params.get("periodo", "mensual")
+    periodo = request.query_params.get(
+      "periodo",
+      "mensual"
+    )
+    mes = request.query_params.get(
+      "mes",
+      None
+    )
     return generar_reporte_pdf(
       request.user,
-      periodo
+      periodo,
+      mes
     )
-
 
 # -----------------------------------------------
 # PROYECCIÓN DE META
 # -----------------------------------------------
-
 class ProyeccionView(APIView):
-
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-
-        meta_id = request.query_params.get("meta")
-
-        # -----------------------------------------------
-        # VALIDAR META
-        # -----------------------------------------------
-
-        if not meta_id:
-            return Response(
-                {
-                    "error": "Debe indicar el ID de la meta."
-                },
-                status=400
-            )
-
-        try:
-            meta_id = int(meta_id)
-
-        except (TypeError, ValueError):
-
-            return Response(
-                {
-                    "error": "El ID de la meta no es válido."
-                },
-                status=400
-            )
-
-        # -----------------------------------------------
-        # OBTENER PROYECCIÓN
-        # -----------------------------------------------
-
-        datos = obtener_proyeccion_meta(
-            request.user,
-            meta_id
-        )
-
-        # -----------------------------------------------
-        # META NO ENCONTRADA
-        # -----------------------------------------------
-
-        if datos is None:
-
-            return Response(
-                {
-                    "error": "La meta no existe o no pertenece al usuario."
-                },
-                status=404
-            )
-
-        return Response(datos)
+  permission_classes = [IsAuthenticated]
+  def get(self, request):
+    meta_id = request.query_params.get("meta")
+    # VALIDAR META
+    if not meta_id:
+      return Response(
+        { "error": "Debe indicar el ID de la meta." }, status=400
+      )
+    try:
+      meta_id = int(meta_id)
+    except (TypeError, ValueError):
+      return Response(
+        {"error": "El ID de la meta no es válido."}, status=400
+      )
+    # OBTENER PROYECCIÓN
+    datos = obtener_proyeccion_meta(
+      request.user,
+      meta_id
+    )
+    # META NO ENCONTRADA
+    if datos is None:
+      return Response(
+        {
+          "error": "La meta no existe o no pertenece al usuario."
+        },
+        status=404
+      )
+    return Response(datos)
 
 

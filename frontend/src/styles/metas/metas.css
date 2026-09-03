@@ -1,6 +1,3 @@
-/* =========================================
-   HEADER
-========================================= */
 .metas-header {
   display: flex;
   align-items: center;
@@ -19,12 +16,12 @@
   color: #999999;
   font-size: 13px;
 }
-.titulo-metas{
+.titulo-metas {
   display: flex;
   align-items: center;
   gap: 14px;
 }
-.icono-titulo-metas{
+.icono-titulo-metas {
   width: 48px;
   height: 48px;
   border-radius: 13px;
@@ -35,396 +32,232 @@
   color: #3f80c9;
 }
 
-.acciones{
+.acciones {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-/* =========================================
-   CONTENIDO
-========================================= */
+
 .metas-contenido {
   width: 100%;
 }
 
-/* =========================================
-   SIN METAS
-========================================= */
-
+/* ---------- SN METAS ---------- */
 .metas-vacio {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   min-height: 380px;
-
   padding: 40px;
-
   background: white;
   border-radius: 16px;
-
   box-shadow: 0 2px 8px rgba(5, 59, 82, 0.06);
-
   text-align: center;
 }
-
 .metas-vacio-icono {
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 64px;
   height: 64px;
-
   margin-bottom: 18px;
-
   border-radius: 18px;
-
   background: #fff6dc;
-
   font-size: 30px;
 }
-
 .metas-vacio h2 {
   margin: 0 0 8px;
-
   color: #053b52;
-
   font-size: 20px;
 }
-
 .metas-vacio p {
   max-width: 420px;
-
   margin: 0 0 22px;
-
   color: #888;
-
   font-size: 13px;
-
   line-height: 1.6;
 }
-
 .metas-vacio-boton {
   border: none;
-
   padding: 10px 16px;
-
   border-radius: 8px;
-
   background: #f7ad1a;
-
   color: white;
-
   font-family: inherit;
-
   font-size: 12px;
-
   font-weight: 600;
-
   cursor: pointer;
-
   transition: 0.2s ease;
 }
-
 .metas-vacio-boton:hover {
   background: #e99f0f;
 }
 
-
-/* =========================================
-   LISTA
-========================================= */
-
+/* ---------- LISTA ---------- */
 .metas-lista {
   display: grid;
-
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(300px, 1fr)
-  );
-
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 18px;
 }
 
-
-/* =========================================
-   TARJETA
-========================================= */
-
+/* ---------- TARJETA ---------- */
 .meta-card {
   position: relative;
-
   display: flex;
   flex-direction: column;
-
   padding: 20px;
-
   background: white;
-
   border-radius: 16px;
-
   box-shadow: 0 2px 8px rgba(5, 59, 82, 0.06);
-
   overflow: hidden;
-
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
 }
-
 .meta-card:hover {
   transform: translateY(-2px);
-
   box-shadow: 0 6px 16px rgba(5, 59, 82, 0.09);
 }
-
-
 /* Línea lateral */
-
 .meta-card::before {
   content: "";
-
   position: absolute;
-
   left: 0;
   top: 14px;
   bottom: 14px;
-
   width: 4px;
-
   border-radius: 0 5px 5px 0;
-
   background: #f7ad1a;
 }
 
-
-/* =========================================
-   CABECERA
-========================================= */
-
+/* ---------- CABECERA ---------- */
 .meta-card-header {
   display: flex;
-
   justify-content: space-between;
-
   align-items: flex-start;
-
   margin-bottom: 8px;
 }
-
 .meta-card-titulo {
   display: flex;
-
   flex-direction: column;
-
   gap: 7px;
 }
-
 .meta-card-titulo h2 {
   margin: 0;
-
   color: #053b52;
-
   font-size: 16px;
 }
 
-
-/* =========================================
-   ESTADO
-========================================= */
-
+/* ---------- ESTADO ---------- */
 .meta-estado {
   width: fit-content;
-
   padding: 4px 8px;
-
   border-radius: 6px;
-
   background: #fff6dc;
-
   color: #c98600;
-
   font-size: 10px;
-
   font-weight: 700;
 }
 
-
-/* =========================================
-   COMPLETADA
-========================================= */
-
+/* ---------- COMPLETA ---------- */
 .meta-card.completado {
   border: 1px solid #b9e6c9;
 }
-
 .meta-card.completado::before {
   background: #2e9b5b;
 }
-
 .meta-card.completado .meta-estado {
   background: #e8f7ee;
-
   color: #2e9b5b;
 }
 
-
-/* =========================================
-   CANCELADA
-========================================= */
-
+/* ---------- CANCELADA ---------- */
 .meta-card.cancelado {
   opacity: 0.75;
 }
-
 .meta-card.cancelado::before {
   background: #c62828;
 }
-
 .meta-card.cancelado .meta-estado {
   background: #fdecec;
-
   color: #c62828;
 }
 
-
-/* =========================================
-   DESCRIPCIÓN
-========================================= */
-
+/* ---------- DESCRIPCIÓN ---------- */
 .meta-descripcion {
   margin: 4px 0 18px;
-
   color: #888;
-
   font-size: 12px;
-
   line-height: 1.5;
-
-  display: -webkit-box;
-
-  -webkit-line-clamp: 2;
-
-  -webkit-box-orient: vertical;
-
   overflow: hidden;
 }
 
-
-/* =========================================
-   MONTOS
-========================================= */
-
+/* ---------- MONTOS ---------- */
 .meta-montos {
   display: flex;
-
   justify-content: space-between;
-
   gap: 15px;
-
   margin-bottom: 18px;
 }
-
 .meta-montos div {
   display: flex;
-
   flex-direction: column;
-
   gap: 4px;
 }
-
 .meta-montos span {
   color: #999;
-
   font-size: 11px;
 }
-
 .meta-montos strong {
   color: #053b52;
-
   font-size: 15px;
 }
 
-
-/* =========================================
-   PROGRESO
-========================================= */
-
+/* ---------- PROGRESO ---------- */
 .meta-progreso {
   margin-bottom: 16px;
 }
-
 .meta-progreso-info {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
   margin-bottom: 7px;
 }
-
 .meta-progreso-info span {
   color: #888;
-
   font-size: 11px;
 }
-
 .meta-progreso-info strong {
   color: #053b52;
-
   font-size: 12px;
 }
-
 .meta-progreso-barra {
   width: 100%;
-
   height: 7px;
-
   overflow: hidden;
-
   border-radius: 10px;
-
   background: #edf0f2;
 }
-
 .meta-progreso-valor {
   height: 100%;
-
   border-radius: 10px;
-
   background: #f7ad1a;
-
   transition: width 0.4s ease;
 }
-
-
 /* Progreso completado */
-
 .meta-card.completado .meta-progreso-valor {
   background: #2e9b5b;
 }
 
-
-/* =========================================
-   FECHA
-========================================= */
-
+/* ---------- FECHA ---------- */
 .meta-fecha {
   margin-bottom: 18px;
-
   color: #888;
-
   font-size: 11px;
 }
 
-
-/* =========================================
-   ACCIONES
-========================================= */
-
+/* ---------- ACCIONES ---------- */
 .meta-card-header {
   display: flex;
   justify-content: space-between;
@@ -432,215 +265,132 @@
   gap: 12px;
   margin-bottom: 8px;
 }
-
 .meta-card-titulo {
   display: flex;
   flex-direction: column;
   gap: 7px;
   min-width: 0;
 }
-
 .meta-card-titulo h2 {
   margin: 0;
-
   color: #053b52;
-
   font-size: 16px;
   font-weight: 700;
-
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-
-/* =========================================
-   BOTONES EDITAR / ELIMINAR
-========================================= */
-
+/* ---------- EDITAR, ELIMINAR ---------- */
 .meta-acciones-importantes {
   display: flex;
   align-items: center;
   gap: 5px;
-
   flex-shrink: 0;
 }
-
 .meta-acciones-importantes button {
   width: 30px;
   height: 30px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 0;
-
   border-radius: 7px;
-
   font-family: inherit;
-
   cursor: pointer;
-
   transition:
     background 0.2s ease,
     color 0.2s ease,
     border-color 0.2s ease,
     transform 0.2s ease;
 }
-
-
 /* Editar */
-
 .meta-editar {
   border: 1px solid #053b5238;
-
   background: white;
-
   color: #053b52;
 }
-
 .meta-editar:hover {
   background: #edfaff;
-
   border-color: #053b5270;
-
   color: #053b52;
-
   transform: translateY(-1px);
 }
-
-
 /* Eliminar */
-
 .meta-eliminar {
   border: 1px solid #f4606045;
-
   background: white;
-
   color: #e04b4b;
 }
-
 .meta-eliminar:hover {
   background: #fff0f0;
-
   border-color: #f46060;
-
   color: #c62828;
-
   transform: translateY(-1px);
 }
 
-
-/* =========================================
-   ACCIONES INFERIORES
-========================================= */
-
+/* ---------- ACCIONES INFERIORES ---------- */
 .meta-acciones {
   display: flex;
-
   justify-content: flex-end;
-
   gap: 8px;
-
   margin-top: auto;
-
   padding-top: 5px;
 }
-
 .meta-acciones button {
   padding: 7px 10px;
-
   border-radius: 7px;
-
   font-family: inherit;
-
   font-size: 10px;
-
   font-weight: 600;
-
   cursor: pointer;
-
   transition: 0.2s ease;
 }
-
-
 /* Hacer abono */
-
 .meta-abono {
   border: 1px solid #00924452;
-
   background: white;
-
   color: #009245;
 }
-
 .meta-abono:hover {
   background: #f2fff5;
 }
-
-
 /* Ver detalle */
-
 .meta-detalle {
   border: 1px solid #f7ad1a6d;
-
   background: white;
-
   color: #c98600;
 }
-
 .meta-detalle:hover {
   background: #fff9e9;
 }
-
-
 /* Ver proyección */
-
 .meta-proyeccion {
   border: 1px solid #053b5277;
-
   background: white;
-
   color: #053b52;
 }
-
 .meta-proyeccion:hover {
   background: #edfaff;
 }
 
-/* =========================================
-   CARGANDO
-========================================= */
-
+/* ---------- CARGANDO ---------- */
 .metas-estado {
   padding: 50px;
-
   text-align: center;
-
   color: #777;
-
   font-size: 13px;
 }
 
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 700px) {
-
   .metas-header {
     align-items: flex-start;
-
     gap: 15px;
   }
-
   .metas-nueva {
     white-space: nowrap;
   }
-
   .metas-lista {
     grid-template-columns: 1fr;
   }
-
 }

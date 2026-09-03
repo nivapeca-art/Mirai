@@ -20,6 +20,8 @@ import ModalAbono from "../components/modales/ModalAbono";
 import ModalHistorialMeta from "../components/modales/ModalHistorialMeta";
 import ModalProyeccion from "../components/modales/ModalProyeccion";
 
+import { obtenerMonedaUsuario,formatearMonto } from "../utils/moneda";
+
 import "../styles/metas/metas.css";
 
 function Metas() {
@@ -27,6 +29,8 @@ function Metas() {
 
   const [metas, setMetas] = useState([]);
   const [cargando, setCargando] = useState(true);
+  // Moneda del usuario
+  const moneda = obtenerMonedaUsuario();
 
   // Modal para crear o editar meta
   // null = cerrado
@@ -125,11 +129,6 @@ function Metas() {
         Number(meta.monto_objetivo)) *
         100,
     );
-  };
-
-  // FORMATEAR DINERO
-  const formatearMonto = (monto) => {
-    return Number(monto).toLocaleString("es-CO");
   };
 
   // TEXTO DEL ESTADO
@@ -264,7 +263,7 @@ function Metas() {
                       <span>Ahorrado</span>
 
                       <strong>
-                        ${formatearMonto(meta.monto_actual)}
+                        {formatearMonto(meta.monto_actual,moneda.codigo)}
                       </strong>
                     </div>
 
@@ -272,7 +271,7 @@ function Metas() {
                       <span>Objetivo</span>
 
                       <strong>
-                        ${formatearMonto(meta.monto_objetivo)}
+                        {formatearMonto(meta.monto_objetivo,moneda.codigo)}
                       </strong>
                     </div>
                   </div>

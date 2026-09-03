@@ -4,15 +4,23 @@ import ModalBase from "./ModalBase";
 
 import { crearMeta, actualizarMeta } from "../../services/metaServices";
 
+import {
+  obtenerMonedaUsuario,
+  formatearMonto,
+  formatearMontoInput,
+  convertirMontoParaAPI,
+} from "../../utils/moneda";
+
 function ModalMeta({ meta = null, onCerrar, onGuardado }) {
   const esEdicion = Boolean(meta);
+  const moneda = obtenerMonedaUsuario();
 
   const [nombre, setNombre] = useState(meta?.nombre || "");
   const [descripcion, setDescripcion] = useState(meta?.descripcion || "");
 
   const [monto, setMonto] = useState(
     meta?.monto_objetivo
-      ? Number(meta.monto_objetivo).toLocaleString("es-CO")
+      ? formatearMontoInput(String(meta.monto_objetivo),moneda.codigo)
       : "",
   );
 
@@ -20,17 +28,6 @@ function ModalMeta({ meta = null, onCerrar, onGuardado }) {
 
   const [guardado, setGuardado] = useState(false);
   const [error, setError] = useState("");
-
-  // FORMATEAR MONTO
-  const formatearMonto = (valor) => {
-    const numero = valor.replace(/\D/g, "");
-
-    if (!numero) {
-      return "";
-    }
-
-    return Number(numero).toLocaleString("es-CO");
-  };
 
   // GUARDAR META
   const guardarMeta = async (e) => {
@@ -45,7 +42,7 @@ function ModalMeta({ meta = null, onCerrar, onGuardado }) {
     }
 
     // CONVERTIR MONTO
-    const montoNumerico = Number(monto.replace(/\./g, ""));
+    const montoNumerico = convertirMontoParaAPI(monto, moneda.codigo);
 
     // VALIDAR MONTO
     if (!montoNumerico || montoNumerico <= 0) {
@@ -162,10 +159,12 @@ function ModalMeta({ meta = null, onCerrar, onGuardado }) {
 
           <input
             type="text"
-            inputMode="numeric"
+            inputMode="decimal"
             placeholder="0"
             value={monto}
-            onChange={(e) => setMonto(formatearMonto(e.target.value))}
+            onChange={(e) =>
+              setMonto(formatearMontoInput(e.target.value, moneda.codigo))
+            }
           />
         </div>
 

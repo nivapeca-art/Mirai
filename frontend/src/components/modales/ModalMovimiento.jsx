@@ -3,8 +3,16 @@ import { useEffect, useState } from "react";
 import ModalBase from "./ModalBase";
 
 import { crearMovimiento } from "../../services/movimientoServices";
+
 import { obtenerCategorias } from "../../services/categoriaServices";
+
 import { obtenerMetas } from "../../services/metaServices";
+
+import {
+  obtenerMonedaUsuario,
+  formatearMontoInput,
+  convertirMontoParaAPI,
+} from "../../utils/moneda";
 
 function ModalMovimiento({ onCerrar, onGuardado }) {
   const [tipo, setTipo] = useState("INGRESO");
@@ -13,11 +21,13 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
   const [categoria, setCategoria] = useState("");
   const [meta, setMeta] = useState("");
   const [descripcion, setDescripcion] = useState("");
-
   const [categorias, setCategorias] = useState([]);
   const [metas, setMetas] = useState([]);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
+
+  const moneda = obtenerMonedaUsuario();
+  const codigoMoneda = moneda?.codigo || "COP";
 
   // CARGAR DATOS
   useEffect(() => {
@@ -30,7 +40,7 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
         obtenerCategorias(),
         obtenerMetas(),
       ]);
-      // Categorias en orden alfabetico
+      // Categorías en orden alfabético
       const categoriasOrdenadas = categoriasData.sort((a, b) =>
         a.nombre.localeCompare(b.nombre),
       );
@@ -40,13 +50,16 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
         .sort((a, b) => a.nombre.localeCompare(b.nombre));
       setCategorias(categoriasOrdenadas);
       setMetas(metasEnProceso);
+
     } catch (error) {
       console.error("Error cargando datos:", error);
       setError("No se pudieron cargar las categorías y metas.");
     }
   };
-  // SEGUN EL TIPO, SALDRAN SOLO LAS CATEGORÍAS DE ESE TIPO
+
+  // SEGÚN EL TIPO, SALDRÁN SOLO LAS CATEGORÍAS DE ESE TIPO
   const categoriasFiltradas = categorias.filter((item) => item.tipo === tipo);
+
   // MANEJAR TIPO DE INGRESO
   const manejarTipo = (e) => {
     const nuevoTipo = e.target.value;
@@ -56,12 +69,18 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
     setMeta("");
   };
 
+  // MANEJAR MONTO
+  const manejarMonto = (e) => {
+    setMonto(formatearMontoInput(e.target.value, codigoMoneda));
+  };
+
   // GUARDAR MOVIMIENTO
   const guardarMovimiento = async (e) => {
     e.preventDefault();
     setError("");
+    const montoAPI = convertirMontoParaAPI(monto, codigoMoneda);
     // Validar monto
-    if (!monto || Number(monto) <= 0) {
+    if (!monto || Number(montoAPI) <= 0) {
       setError("El monto debe ser mayor a 0.");
       return;
     }
@@ -83,7 +102,7 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
     // Datos para crear el movimiento
     const movimiento = {
       tipo,
-      monto: Number(monto.replace(/\./g, "")),
+      monto: montoAPI,
       fecha,
       categoria: tipo === "AHORRO" ? null : Number(categoria),
       meta: tipo === "AHORRO" ? Number(meta) : null,
@@ -113,15 +132,6 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
     }
   };
 
-  // Formatear Monto
-  const formatearMonto = (valor) => {
-    const numero = valor.replace(/\D/g, "");
-    if (!numero) {
-      return "";
-    }
-    return Number(numero).toLocaleString("es-CO");
-  };
-
   return (
     <ModalBase titulo="Nuevo movimiento" onCerrar={onCerrar}>
       <form onSubmit={guardarMovimiento}>
@@ -139,11 +149,9 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
           <label>Monto</label>
           <input
             type="text"
-            inputMode="numeric"
+            inputMode="decimal"
             value={monto}
-            onChange={(e) => {
-              setMonto(formatearMonto(e.target.value));
-            }}
+            onChange={manejarMonto}
             placeholder="0"
           />
         </div>
@@ -156,13 +164,11 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
               onChange={(e) => setCategoria(e.target.value)}
             >
               <option value="">Seleccionar categoría</option>
-              {categorias
-                .filter((item) => item.tipo === tipo)
-                .map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.nombre}
-                  </option>
-                ))}
+              {categoriasFiltradas.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.nombre}
+                </option>
+              ))}
             </select>
           </div>
         )}
@@ -220,6 +226,7 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
       </form>
     </ModalBase>
   );
+  
 }
 
 export default ModalMovimiento;

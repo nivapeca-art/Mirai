@@ -1,17 +1,26 @@
 import { X } from "lucide-react";
 
+import { formatearMonto } from "../../utils/moneda";
+
 import "../../styles/modales/modalComparacion.css";
 
 function ComparacionModal({
   dashboard,
   categorias,
-  formatearMoneda,
   obtenerCategoriaAnterior,
   obtenerMensaje,
   onClose,
 }) {
   const periodo = dashboard.periodo?.nombre;
   const esComparacion = periodo === "Mes vs mes anterior";
+  const codigoMoneda = dashboard?.moneda?.codigo || "COP";
+
+  const formatearMoneda = (valor) => {
+    return formatearMonto(
+      valor || 0,
+      codigoMoneda
+    );
+  };
 
   return (
     <div className="comparacion-modal-overlay" onClick={onClose}>

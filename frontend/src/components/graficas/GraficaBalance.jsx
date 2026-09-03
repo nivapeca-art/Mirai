@@ -8,29 +8,38 @@ import {
   Tooltip,
 } from "recharts";
 
+import { formatearMonto } from "../../utils/moneda";
+
 function GraficaBalance({ dashboard, periodo }) {
-  
   const balance = dashboard?.balance || [];
-  const moneda = dashboard?.moneda?.simbolo || "$";
+
+  const codigoMoneda = dashboard?.moneda?.codigo || "COP";
+
+  // =========================================
+  // PREPARAR DATOS
+  // =========================================
 
   let datos = [];
+
   if (periodo === "anual") {
     datos = balance.map((item) => ({
       nombre: item.mes,
       saldo: item.saldo || 0,
     }));
-
   } else if (periodo === "comparacion") {
     datos = balance.map((item) => {
       const ingresos = item.actual?.ingresos || 0;
+
       const gastos = item.actual?.gastos || 0;
+
       const ahorros = item.actual?.ahorros || 0;
+
       return {
         nombre: `Día ${item.dia}`,
+
         saldo: ingresos - gastos - ahorros,
       };
     });
-
   } else {
     datos = balance.map((item) => ({
       nombre: `Día ${item.dia}`,
@@ -38,8 +47,12 @@ function GraficaBalance({ dashboard, periodo }) {
     }));
   }
 
+  // =========================================
+  // FORMATEAR MONTO
+  // =========================================
+
   const formatearValor = (valor) => {
-    return `${moneda} ${Number(valor || 0).toLocaleString("es-CO")}`;
+    return formatearMonto(valor || 0, codigoMoneda);
   };
 
   return (
@@ -47,9 +60,11 @@ function GraficaBalance({ dashboard, periodo }) {
       <div className="cabecera-grafica">
         <div>
           <h2>Balance financiero</h2>
+
           <p>Evolución del saldo durante el período</p>
         </div>
       </div>
+
       <div className="contenedor-grafica balance">
         {datos.length === 0 ? (
           <div className="grafica-sin-datos">
@@ -114,7 +129,6 @@ function GraficaBalance({ dashboard, periodo }) {
       </div>
     </div>
   );
-  
 }
 
 export default GraficaBalance;

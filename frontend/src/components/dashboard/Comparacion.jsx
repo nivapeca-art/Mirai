@@ -4,6 +4,8 @@ import { TrendingUp, TrendingDown, Minus, Plus } from "lucide-react";
 
 import ComparacionModal from "../modales/ModalComparacion";
 
+import { formatearMonto } from "../../utils/moneda";
+
 import "../../styles/dashboard/comparacion.css";
 
 function Comparacion({ dashboard }) {
@@ -11,13 +13,8 @@ function Comparacion({ dashboard }) {
   const categoriasActuales = dashboard.gastos_por_categoria || [];
   const categoriasAnteriores = dashboard.gastos_por_categoria_anterior || [];
   const periodo = dashboard.periodo?.nombre;
-  const moneda = dashboard.moneda?.simbolo || "$";
+  const codigoMoneda = dashboard.moneda?.codigo || "COP";
   const esComparacion = periodo === "Mes vs mes anterior";
-
-  // FORMATEAR MONEDA
-  const formatearMoneda = (valor) => {
-    return `${moneda} ${Number(valor || 0).toLocaleString("es-CO")}`;
-  };
 
   // TOTAL ACTUAL
   const totalGastosActuales = categoriasActuales.reduce(
@@ -166,10 +163,13 @@ function Comparacion({ dashboard }) {
 
   return (
     <>
+      {" "}
       <section className="comparacion">
-        {/* HEADER */}
+        {/* HEADER */}{" "}
         <div className="comparacion-header">
+          {" "}
           <div>
+            {" "}
             <h2>Gastos por categoría</h2>
             <p>
               {esComparacion
@@ -181,7 +181,6 @@ function Comparacion({ dashboard }) {
           </div>
           <span className="comparacion-periodo">{periodo}</span>
         </div>
-
         {/* SIN GASTOS */}
         {categorias.length === 0 ? (
           <div className="comparacion-vacia">
@@ -218,7 +217,9 @@ function Comparacion({ dashboard }) {
                     <div className="barra-comparacion">
                       <div className="barra-label">
                         Mes anterior:{" "}
-                        <strong>{formatearMoneda(anterior)}</strong> 
+                        <strong>
+                          {formatearMonto(anterior, codigoMoneda)}
+                        </strong>
                       </div>
                       <div className="barra-fondo">
                         <div
@@ -233,9 +234,9 @@ function Comparacion({ dashboard }) {
                     {/* ACTUAL */}
                     <div className="barra-comparacion">
                       <div className="barra-label">
-                        Este mes: <strong>{formatearMoneda(actual)}</strong>
+                        Este mes:{" "}
+                        <strong>{formatearMonto(actual, codigoMoneda)}</strong>
                       </div>
-
                       <div className="barra-fondo">
                         <div
                           className="barra-actual"
@@ -249,7 +250,6 @@ function Comparacion({ dashboard }) {
                     {/* MENSAJE */}
                     <div className={`categoria-mensaje ${mensaje.tipo}`}>
                       {mensaje.icono}
-
                       <span>{mensaje.texto}</span>
                     </div>
                   </div>
@@ -266,7 +266,7 @@ function Comparacion({ dashboard }) {
                     </span>
                     {/* Monto */}
                     <span className="categoria-monto">
-                      {formatearMoneda(actual)}
+                      {formatearMonto(actual, codigoMoneda)}
                     </span>
                   </div>
                   {/* Barra */}
@@ -278,7 +278,8 @@ function Comparacion({ dashboard }) {
                       }}
                     />
                   </div>
-                  {/* footer */}
+
+                  {/* Footer */}
                   <div className="categoria-footer">
                     <span>{porcentaje.toFixed(1)}% de tus gastos</span>
                   </div>
@@ -287,7 +288,6 @@ function Comparacion({ dashboard }) {
             })}
           </div>
         )}
-
         {/* TOTAL */}
         {categoriasActuales.length > 0 && (
           <div className="comparacion-total">
@@ -296,8 +296,11 @@ function Comparacion({ dashboard }) {
                 {esComparacion ? "Gastos este mes" : "Total de gastos"}
               </span>
               {/* Total gasto actual */}
-              <strong>{formatearMoneda(totalGastosActuales)}</strong>
+              <strong>
+                {formatearMonto(totalGastosActuales, codigoMoneda)}
+              </strong>
             </div>
+
             {esComparacion && (
               <div className={`total-variacion ${variacionTotal.tipo}`}>
                 {variacionTotal.tipo === "sube" && <TrendingUp size={15} />}
@@ -317,7 +320,6 @@ function Comparacion({ dashboard }) {
             )}
           </div>
         )}
-
         {/* VER TODAS */}
         {categorias.length > 3 && (
           <button
@@ -329,13 +331,12 @@ function Comparacion({ dashboard }) {
           </button>
         )}
       </section>
-
       {/* MODAL */}
       {modalAbierto && (
         <ComparacionModal
           dashboard={dashboard}
           categorias={categorias}
-          formatearMoneda={formatearMoneda}
+          formatearMoneda={(valor) => formatearMonto(valor, codigoMoneda)}
           obtenerCategoriaAnterior={obtenerCategoriaAnterior}
           obtenerMensaje={obtenerMensaje}
           onClose={() => setModalAbierto(false)}
@@ -343,7 +344,6 @@ function Comparacion({ dashboard }) {
       )}
     </>
   );
-  
 }
 
 export default Comparacion;

@@ -6,13 +6,15 @@ import ModalBase from "./ModalBase";
 
 import { obtenerProyeccionMeta } from "../../services/proyeccionServices";
 
+import { obtenerMonedaUsuario, formatearMonto } from "../../utils/moneda";
+
 import "../../styles/modales/modalProyeccion.css";
 
 function ModalProyeccion({ meta, onCerrar }) {
-
   const [proyeccion, setProyeccion] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const moneda = obtenerMonedaUsuario();
 
   // CARGAR PROYECCIÓN
   useEffect(() => {
@@ -23,21 +25,16 @@ function ModalProyeccion({ meta, onCerrar }) {
     try {
       setCargando(true);
       setError("");
-      const data = await obtenerProyeccionMeta(meta.id);
-      setProyeccion(data);
 
+      const data = await obtenerProyeccionMeta(meta.id);
+
+      setProyeccion(data);
     } catch (error) {
       console.error("Error obteniendo proyección:", error);
       setError("No se pudo obtener la proyección de la meta.");
-
     } finally {
       setCargando(false);
     }
-  };
-
-  // FORMATEAR MONTO
-  const formatearMonto = (monto) => {
-    return Number(monto || 0).toLocaleString("es-CO");
   };
 
   // FORMATEAR FECHA
@@ -104,10 +101,8 @@ function ModalProyeccion({ meta, onCerrar }) {
           <TrendingUp size={28} />
           <span>Calculando proyección...</span>
         </div>
-
       ) : error ? (
         <div className="proyeccion-error">{error}</div>
-
       ) : proyeccion ? (
         <div className="proyeccion-contenido">
           {/* RESUMEN */}
@@ -115,19 +110,23 @@ function ModalProyeccion({ meta, onCerrar }) {
             <div className="proyeccion-resumen-item">
               <Wallet size={18} />
               <span>Ahorrado</span>
-              <strong>${formatearMonto(proyeccion.meta.monto_actual)}</strong>
+              <strong>
+                {formatearMonto(proyeccion.meta.monto_actual, moneda.codigo)}
+              </strong>
             </div>
-            {/* Objetivo y falta */}
             <div className="proyeccion-resumen-item">
               <Target size={18} />
               <span>Objetivo</span>
-              <strong>${formatearMonto(proyeccion.meta.monto_objetivo)}</strong>
+              <strong>
+                {formatearMonto(proyeccion.meta.monto_objetivo, moneda.codigo)}
+              </strong>
             </div>
-
             <div className="proyeccion-resumen-item">
               <TrendingUp size={18} />
               <span>Falta</span>
-              <strong>${formatearMonto(proyeccion.meta.monto_faltante)}</strong>
+              <strong>
+                {formatearMonto(proyeccion.meta.monto_faltante, moneda.codigo)}
+              </strong>
             </div>
           </div>
 
@@ -142,7 +141,8 @@ function ModalProyeccion({ meta, onCerrar }) {
                 <div>
                   <span>Ritmo de ahorro actual</span>
                   <strong>
-                    ${formatearMonto(proyeccion.promedio_mensual)} al mes
+                    {formatearMonto(proyeccion.promedio_mensual, moneda.codigo)}{" "}
+                    al mes
                   </strong>
                   <p>
                     Este es el promedio aproximado de tus abonos históricos a
@@ -158,10 +158,8 @@ function ModalProyeccion({ meta, onCerrar }) {
             {proyeccion.meses_estimados === 0 ? (
               <>
                 <div className="proyeccion-resultado-icono">🎉</div>
-
                 <div>
                   <span>Meta completada</span>
-
                   <strong>¡Ya alcanzaste tu objetivo!</strong>
                 </div>
               </>
@@ -191,8 +189,10 @@ function ModalProyeccion({ meta, onCerrar }) {
                   </strong>
                   <p>
                     Solo hace falta un abono de{" "}
-                    <b>${formatearMonto(obtenerAbonoProyectado())}</b> para
-                    alcanzar tu objetivo
+                    <b>
+                      {formatearMonto(obtenerAbonoProyectado(), moneda.codigo)}
+                    </b>{" "}
+                    para alcanzar tu objetivo
                     {diferenciaFecha !== null && (
                       <>
                         {" "}
@@ -265,7 +265,10 @@ function ModalProyeccion({ meta, onCerrar }) {
                       Para cumplirla dentro de la fecha límite necesitas ahorrar
                       como mínimo{" "}
                       <strong>
-                        ${formatearMonto(proyeccion.ahorro_mensual_recomendado)}
+                        {formatearMonto(
+                          proyeccion.ahorro_mensual_recomendado,
+                          moneda.codigo,
+                        )}
                       </strong>{" "}
                       al mes.
                     </p>
@@ -285,12 +288,14 @@ function ModalProyeccion({ meta, onCerrar }) {
                       ? "Último abono"
                       : "Proyección mensual"}
                   </h3>
-
                   {proyeccion.meses_estimados === 1 ? (
                     <p>
                       Solo 1 abono más de{" "}
                       <strong>
-                        ${formatearMonto(obtenerAbonoProyectado())}
+                        {formatearMonto(
+                          obtenerAbonoProyectado(),
+                          moneda.codigo,
+                        )}
                       </strong>{" "}
                       para cumplir tu meta.
                     </p>
@@ -298,7 +303,10 @@ function ModalProyeccion({ meta, onCerrar }) {
                     <p>
                       Manteniendo un abono aproximado de{" "}
                       <strong>
-                        ${formatearMonto(proyeccion.promedio_mensual)}
+                        {formatearMonto(
+                          proyeccion.promedio_mensual,
+                          moneda.codigo,
+                        )}
                       </strong>{" "}
                       cada mes.
                     </p>
@@ -308,20 +316,26 @@ function ModalProyeccion({ meta, onCerrar }) {
 
               {/* TABLA DE PROYECCIÓN */}
               <div className="proyeccion-tabla">
-                {/* Encabezado */}
+                {/* ENCABEZADO */}
                 <div className="proyeccion-tabla-titulos">
                   <span>Mes</span>
                   <span>Abono</span>
                   <span>Total acumulado</span>
                   <span>Progreso</span>
                 </div>
-                {/* Filas */}
+                {/* FILAS */}
                 <div className="proyeccion-tabla-filas">
                   {proyeccion.proyeccion.map((mes) => (
                     <div key={mes.mes} className="proyeccion-fila">
-                      <span className="proyeccion-numero-mes">Mes {mes.mes}</span>
-                      <span className="proyeccion-abono">${formatearMonto(mes.ahorro_estimado)}</span>
-                      <strong className="proyeccion-acumulado">${formatearMonto(mes.acumulado_estimado)}</strong>
+                      <span className="proyeccion-numero-mes">
+                        Mes {mes.mes}
+                      </span>
+                      <span className="proyeccion-abono">
+                        {formatearMonto(mes.ahorro_estimado, moneda.codigo)}
+                      </span>
+                      <strong className="proyeccion-acumulado">
+                        {formatearMonto(mes.acumulado_estimado, moneda.codigo)}
+                      </strong>
                       <div className="proyeccion-progreso">
                         <div className="proyeccion-progreso-barra">
                           <div

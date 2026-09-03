@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
     {
-        'NAME': 'api_mirai.validar.validar_contrasena',
+        'NAME': 'api_mirai.validar.ValidarContrasena',
     },
 ]
 

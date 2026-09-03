@@ -1,7 +1,9 @@
-function TarjetasResumen({ dashboard }) {
+import { formatearMonto } from "../../utils/moneda";
 
+function TarjetasResumen({ dashboard }) {
   const { moneda, ingresos, gastos, saldo, comparacion } = dashboard;
-  const simbolo = moneda?.simbolo || "$";
+
+  const codigoMoneda = moneda?.codigo || "COP";
 
   const obtenerClaseAlteracion = (tipo, tendencia) => {
     if (tendencia === "IGUAL") {
@@ -30,14 +32,12 @@ function TarjetasResumen({ dashboard }) {
 
   return (
     <section className="tarjetas-resumen">
-      {/* DISPONIBLE */}
+      {/* DISPONIBLE */}{" "}
       <div className="tarjeta-disponible">
+        {" "}
         <p>Disponible</p>
         {/* Dinero */}
-        <p className="valor">
-          {" "}
-          {simbolo} {saldo.toLocaleString("es-CO")}{" "}
-        </p>
+        <p className="valor">{formatearMonto(saldo, codigoMoneda)}</p>
         {/* Aumento o disminución */}
         <p
           className={obtenerClaseAlteracion(
@@ -50,16 +50,14 @@ function TarjetasResumen({ dashboard }) {
           {comparacion.saldo.porcentaje !== null &&
             ` ${comparacion.saldo.porcentaje}%`}
         </p>
-        {/* Información  */}
+        {/* Información */}
         <p className="mensaje">{comparacion.saldo.mensaje}</p>
       </div>
       {/* INGRESOS */}
       <div className="tarjeta-ingresos">
         <p>Ingresos</p>
         {/* Dinero */}
-        <p className="valor">
-          {simbolo} {ingresos.toLocaleString("es-CO")}
-        </p>
+        <p className="valor">{formatearMonto(ingresos, codigoMoneda)}</p>
         {/* Aumento o disminución */}
         <p
           className={obtenerClaseAlteracion(
@@ -79,9 +77,7 @@ function TarjetasResumen({ dashboard }) {
       <div className="tarjeta-gastos">
         <p>Gastos</p>
         {/* Dinero */}
-        <p className="valor">
-          {simbolo} {gastos.toLocaleString("es-CO")}
-        </p>
+        <p className="valor">{formatearMonto(gastos, codigoMoneda)}</p>
         {/* Aumento o disminución */}
         <p
           className={obtenerClaseAlteracion(

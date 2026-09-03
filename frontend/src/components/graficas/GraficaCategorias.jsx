@@ -7,18 +7,34 @@ import {
   Legend,
 } from "recharts";
 
-function GraficaCategorias({ dashboard }) {
+import { formatearMonto } from "../../utils/moneda";
 
+function GraficaCategorias({ dashboard }) {
   const categorias = dashboard?.gastos_por_categoria || [];
-  const moneda = dashboard?.moneda?.simbolo || "$";
+
+  const codigoMoneda = dashboard?.moneda?.codigo || "COP";
+
+  // =========================================
+  // PREPARAR DATOS
+  // =========================================
+
   const datos = categorias.map((item) => ({
     nombre: item.categoria,
     valor: Number(item.total || 0),
   }));
+
+  // =========================================
+  // TOTAL
+  // =========================================
+
   const total = datos.reduce((acumulado, item) => acumulado + item.valor, 0);
 
+  // =========================================
+  // FORMATEAR MONTO
+  // =========================================
+
   const formatearValor = (valor) => {
-    return `${moneda} ${Number(valor || 0).toLocaleString("es-CO")}`;
+    return formatearMonto(valor || 0, codigoMoneda);
   };
 
   return (
@@ -26,6 +42,7 @@ function GraficaCategorias({ dashboard }) {
       <div className="cabecera-grafica">
         <div>
           <h2>Gastos por categoría</h2>
+
           <p>Distribución de tus gastos</p>
         </div>
       </div>
@@ -85,15 +102,17 @@ function GraficaCategorias({ dashboard }) {
                 const porcentaje =
                   total > 0 ? ((categoria.valor / total) * 100).toFixed(1) : 0;
 
+                const colorCategoria = `hsl(${205 + index * 37}, 55%, ${
+                  48 + (index % 3) * 8
+                }%)`;
+
                 return (
                   <div className="item-categoria" key={categoria.nombre}>
                     <div className="nombre-categoria">
                       <span
                         className="punto-categoria"
                         style={{
-                          background: `hsl(${205 + index * 37}, 55%, ${
-                            48 + (index % 3) * 8
-                          }%)`,
+                          background: colorCategoria,
                         }}
                       />
 

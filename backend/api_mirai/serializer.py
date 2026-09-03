@@ -103,6 +103,8 @@ class LoginSerializer(TokenObtainPairSerializer):
         'first_name': usuario.first_name,
         'last_name': usuario.last_name,
         'email': usuario.email,
+        'pais': usuario.pais.id if usuario.pais else None,
+        'pais_detalle': PaisSerializer(usuario.pais).data if usuario.pais else None,
       }
     }
     
