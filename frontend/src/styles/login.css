@@ -291,20 +291,38 @@
 ========================================= */
 .footer {
   display: flex;
-  justify-content: center;
-  gap: 7px;
-  margin-top: 5px;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
   margin-bottom: 45px;
   color: #6b7280;
   font-size: 13px;
+}
+.registro-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 .footer a {
   color: #064b68;
   font-weight: 600;
   text-decoration: none;
+  transition: color 0.2s ease;
 }
 .footer a:hover {
+  color: #053b52;
   text-decoration: underline;
+}
+.enlace-recuperar {
+  font-size: 12px;
+  font-weight: 500 !important;
+  color: #737b84 !important;
+}
+.enlace-recuperar:hover {
+  color: #064b68 !important;
+  text-decoration: none !important;
 }
 
 /* =========================================

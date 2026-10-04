@@ -74,7 +74,6 @@ function ModalCategoria({ onCerrar, onGuardado }) {
           <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
             <option value="INGRESO">Ingreso</option>
             <option value="GASTO">Gasto</option>
-            <option value="AHORRO">Ahorro</option>
           </select>
         </div>
         {/* BOTONES */}

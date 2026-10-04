@@ -8,6 +8,9 @@ import Movimientos from "../pages/Movimientos";
 import Obligaciones from "../pages/Obligaciones";
 import Graficas from "../pages/Graficas";
 import Reporte from "../pages/Reporte";
+import Perfil from "../pages/Perfil";
+import RecuperarPassword from "../pages/RecuperarContrasena";
+import RestablecerPassword from "../pages/RestablecerContrasena";
 
 
 function AppRouter (){
@@ -17,6 +20,8 @@ function AppRouter (){
       {/* Rutas publicas */}
       <Route path="/login" element={<Autenticar/>}/>
       <Route path="/registro" element={<Autenticar/>}/>
+      <Route path="/recuperar-password" element={<RecuperarPassword />}/>
+      <Route path="/restablecer-password/:uid/:token" element={<RestablecerPassword />}/>
       {/* Rutas privadas */}
        <Route element={<RutaProtegida />}>
 
@@ -27,6 +32,7 @@ function AppRouter (){
           <Route path="/graficas" element={<Graficas />} />
           <Route path="/obligaciones" element={<Obligaciones />} />
           <Route path="/reportesPDF" element={<Reporte/>}/>
+          <Route path="/perfil" element={<Perfil />} />
         </Route>
         
       </Route>

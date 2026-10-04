@@ -1,25 +1,16 @@
-import {
-  ArrowDown,
-  ArrowUp,
-  PiggyBank,
-  Wallet,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, PiggyBank, Wallet } from "lucide-react";
 
 import { formatearMonto } from "../../utils/moneda";
 
 function ResumenGraficas({ dashboard }) {
-   const codigoMoneda = dashboard?.moneda?.codigo || "COP";
+  const codigoMoneda = dashboard?.moneda?.codigo || "COP";
 
   const formatear = (valor) => {
-    return formatearMonto(
-      valor || 0,
-      codigoMoneda
-    );
+    return formatearMonto(valor || 0, codigoMoneda);
   };
 
   return (
     <div className="resumen-graficas">
-
       {/* INGRESOS */}
       <div className="tarjeta-resumen-grafica ingresos">
         <div className="icono-resumen-grafica">
@@ -28,11 +19,13 @@ function ResumenGraficas({ dashboard }) {
 
         <div className="contenido-resumen-grafica">
           <span>Ingresos</span>
-          <strong>
-            {formatear(dashboard.ingresos)}
-          </strong>
+          <strong>{formatear(dashboard.ingresos)}</strong>
+          {dashboard.periodo?.nombre === "Mes vs mes anterior" && (
+            <small>
+              Mes anterior: {formatear(dashboard.ingresos_anterior)}
+            </small>
+          )}
         </div>
-
       </div>
 
       {/* GASTOS */}
@@ -42,9 +35,10 @@ function ResumenGraficas({ dashboard }) {
         </div>
         <div className="contenido-resumen-grafica">
           <span>Gastos</span>
-          <strong>
-            {formatear(dashboard.gastos)}
-          </strong>
+          <strong>{formatear(dashboard.gastos)}</strong>
+          {dashboard.periodo?.nombre === "Mes vs mes anterior" && (
+            <small>Mes anterior: {formatear(dashboard.gastos_anterior)}</small>
+          )}
         </div>
       </div>
 
@@ -55,9 +49,10 @@ function ResumenGraficas({ dashboard }) {
         </div>
         <div className="contenido-resumen-grafica">
           <span>Ahorros</span>
-          <strong>
-            {formatear(dashboard.ahorros)}
-          </strong>
+          <strong>{formatear(dashboard.ahorros)}</strong>
+          {dashboard.periodo?.nombre === "Mes vs mes anterior" && (
+            <small>Mes anterior: {formatear(dashboard.ahorros_anterior)}</small>
+          )}
         </div>
       </div>
 
@@ -68,9 +63,10 @@ function ResumenGraficas({ dashboard }) {
         </div>
         <div className="contenido-resumen-grafica">
           <span>Disponible</span>
-          <strong>
-            {formatear(dashboard.saldo)}
-          </strong>
+          <strong>{formatear(dashboard.saldo)}</strong>
+          {dashboard.periodo?.nombre === "Mes vs mes anterior" && (
+            <small>Mes anterior: {formatear(dashboard.saldo_anterior)}</small>
+          )}
         </div>
       </div>
     </div>

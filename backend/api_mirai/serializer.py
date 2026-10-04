@@ -1,8 +1,11 @@
 from rest_framework import serializers
+# Token al cambiar la contraseña
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.password_validation import validate_password
 from django.db.models import Q
-from .models import Moneda,Pais,User,Meta,Categoria,Movimiento,Obligacion
+from .models import Moneda,Pais,User,Meta,Categoria,Movimiento,Obligacion,HistorialObligacion
 from datetime import date
 from django.utils import timezone
 
@@ -85,10 +88,13 @@ class LoginSerializer(TokenObtainPairSerializer):
       raise serializers.ValidationError(
         'Usuario/correo o contraseña incorrectos.'
       )
-    
+    #GUARDAR EL ÚLTIMO ACCESO ANTERIOR
+    ultimo_acceso_anterior = usuario.last_login
+    print("ANTES DE ACTUALIZAR:", ultimo_acceso_anterior)
     # ACTUALIZAR ÚLTIMO ACCESO
     usuario.last_login = timezone.now()
     usuario.save(update_fields=['last_login'])
+    print("DESPUÉS DE ACTUALIZAR:", usuario.last_login)
 
     # GENERAR TOKEN
     refresh = self.get_token(usuario)
@@ -105,9 +111,96 @@ class LoginSerializer(TokenObtainPairSerializer):
         'email': usuario.email,
         'pais': usuario.pais.id if usuario.pais else None,
         'pais_detalle': PaisSerializer(usuario.pais).data if usuario.pais else None,
+        'ultimo_acceso': ultimo_acceso_anterior
       }
     }
-    
+  
+# -----------------------------------------------
+# CAMBIAR CONTRASEÑA DESDE EL PERFIL
+# -----------------------------------------------
+class CambiarPasswordSerializer(serializers.Serializer):
+  password_actual = serializers.CharField(write_only=True)
+  password_nueva = serializers.CharField(write_only=True)
+  confirmar_password = serializers.CharField(write_only=True)
+
+  def validate(self, attrs):
+    usuario = self.context["request"].user
+    password_actual = attrs.get("password_actual")
+    password_nueva = attrs.get("password_nueva")
+    confirmar_password = attrs.get("confirmar_password")
+
+    # Comprobar contraseña actual
+    if not usuario.check_password(password_actual):
+      raise serializers.ValidationError({
+        "password_actual": "La contraseña actual es incorrecta."
+      })
+
+    # Comprobar que las nuevas contraseñas coinciden
+    if password_nueva != confirmar_password:
+      raise serializers.ValidationError({
+        "confirmar_password": "Las contraseñas nuevas no coinciden."
+      })
+
+    # Comprobar que la nueva contraseña no sea igual a la actual
+    if password_actual == password_nueva:
+      raise serializers.ValidationError({
+        "password_nueva": "La nueva contraseña debe ser diferente a la actual."
+      })
+
+    # Validación de Django para la contraseña
+    from django.contrib.auth.password_validation import validate_password
+    validate_password(password_nueva, usuario)
+    return attrs
+
+
+# -----------------------------------------------
+# OLVIDO LA CONTRASEÑA DESDE EL LOGIN
+# -----------------------------------------------
+User = get_user_model()
+# Solicitar Recuperar contraseña
+class SolicitarRecuperacionSerializer(serializers.Serializer):
+  email = serializers.EmailField()
+  def validate_email(self, value):
+    value = value.lower().strip()
+    if not User.objects.filter(email__iexact=value).exists():
+      raise serializers.ValidationError(
+        "No existe una cuenta registrada con este correo."
+      )
+    return value
+# Restablecer Contraseña
+class RestablecerPasswordSerializer(serializers.Serializer):
+  uid = serializers.CharField()
+  token = serializers.CharField()
+  password_nueva = serializers.CharField(write_only=True)
+  confirmar_password = serializers.CharField(write_only=True)
+
+  def validate(self, attrs):
+    try:
+      usuario_id = int(attrs["uid"])
+      usuario = User.objects.get(pk=usuario_id)
+    except (ValueError, User.DoesNotExist):
+      raise serializers.ValidationError({
+        "token": "El enlace de recuperación no es válido."
+      })
+
+    token = attrs["token"]
+    #Token de default
+    if not default_token_generator.check_token(usuario, token):
+      raise serializers.ValidationError({
+          "token": "El enlace de recuperación no es válido o ha caducado."
+      })
+    password_nueva = attrs["password_nueva"]
+    confirmar_password = attrs["confirmar_password"]
+    #Comparar contraseñas
+    if password_nueva != confirmar_password:
+      raise serializers.ValidationError({
+          "confirmar_password": "Las contraseñas nuevas no coinciden."
+      })
+
+    from django.contrib.auth.password_validation import validate_password
+    validate_password(password_nueva, usuario)
+    attrs["usuario"] = usuario
+    return attrs
 # -----------------------------------------------
 # META
 # -----------------------------------------------
@@ -259,6 +352,14 @@ class ObligacionSerializer(serializers.ModelSerializer):
   def get_dias_restantes(self, obj):
     return (obj.fecha_limite - date.today()).days
 
+# -----------------------------------------------
+# HISTORIAL DE OBLIGACIONES
+# -----------------------------------------------
+class HistorialObligacionSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = HistorialObligacion
+    fields = "__all__"
+    read_only_fields = ["usuario", "fecha_realizada"]
 
 
 

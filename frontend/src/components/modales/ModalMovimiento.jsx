@@ -3,9 +3,7 @@ import { useEffect, useState } from "react";
 import ModalBase from "./ModalBase";
 
 import { crearMovimiento } from "../../services/movimientoServices";
-
 import { obtenerCategorias } from "../../services/categoriaServices";
-
 import { obtenerMetas } from "../../services/metaServices";
 
 import {
@@ -13,11 +11,13 @@ import {
   formatearMontoInput,
   convertirMontoParaAPI,
 } from "../../utils/moneda";
+import { obtenerFechaHoy } from "../../utils/fecha";
 
 function ModalMovimiento({ onCerrar, onGuardado }) {
   const [tipo, setTipo] = useState("INGRESO");
   const [monto, setMonto] = useState("");
   const [fecha, setFecha] = useState("");
+  const hoy = obtenerFechaHoy();
   const [categoria, setCategoria] = useState("");
   const [meta, setMeta] = useState("");
   const [descripcion, setDescripcion] = useState("");
@@ -50,7 +50,6 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
         .sort((a, b) => a.nombre.localeCompare(b.nombre));
       setCategorias(categoriasOrdenadas);
       setMetas(metasEnProceso);
-
     } catch (error) {
       console.error("Error cargando datos:", error);
       setError("No se pudieron cargar las categorías y metas.");
@@ -87,6 +86,12 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
     // Validar fecha
     if (!fecha) {
       setError("Debes seleccionar una fecha.");
+      return;
+    }
+    // La fecha no puede ser mayor al día de hoy
+    const hoy = new Date().toISOString().split("T")[0];
+    if (fecha > hoy) {
+      setError("La fecha no puede ser después a hoy.");
       return;
     }
     // Validar categoría
@@ -164,11 +169,26 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
               onChange={(e) => setCategoria(e.target.value)}
             >
               <option value="">Seleccionar categoría</option>
-              {categoriasFiltradas.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.nombre}
-                </option>
-              ))}
+
+              <optgroup label="Generales">
+                {categoriasFiltradas
+                  .filter((item) => item.creada === null)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nombre}
+                    </option>
+                  ))}
+              </optgroup>
+
+              <optgroup label="Mis categorías">
+                {categoriasFiltradas
+                  .filter((item) => item.creada !== null)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nombre}
+                    </option>
+                  ))}
+              </optgroup>
             </select>
           </div>
         )}
@@ -192,6 +212,7 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
           <input
             type="date"
             value={fecha}
+            max={hoy}
             onChange={(e) => setFecha(e.target.value)}
           />
         </div>
@@ -226,7 +247,6 @@ function ModalMovimiento({ onCerrar, onGuardado }) {
       </form>
     </ModalBase>
   );
-  
 }
 
 export default ModalMovimiento;

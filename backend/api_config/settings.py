@@ -144,3 +144,7 @@ SIMPLE_JWT = {
 
 # Definicion de modelo que se usara en todo el proyecto
 AUTH_USER_MODEL = 'api_mirai.User'
+
+#Para restablecer la contraseña sin enviar el correo, se ve en la consolax
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "no-reply@mirai.com"

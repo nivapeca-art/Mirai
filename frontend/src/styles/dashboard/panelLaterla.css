@@ -276,6 +276,15 @@
   color: #cb2a49;
   background: #ffe0e5;
 }
+.obligacion-cumplida-hoy {
+  flex-shrink: 0;
+  padding: 4px 7px;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  color: #2e8b57;
+  background: #e4f7ea;
+}
 /* Próxima */
 .obligacion-proxima {
   color: #F7AD1A;

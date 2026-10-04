@@ -33,3 +33,19 @@ export const marcarObligacionCumplida = async (id, cumplida) => {
   );
   return data;
 };
+// DESHACER REALIZACIÓN
+export const deshacerObligacionCumplida = async (id) => {
+  const { data } = await api.post(
+    `obligaciones/${id}/deshacer_cumplida/`
+  );
+
+  return data;
+};
+
+// HISTORIAL DE OBLIGACIONES
+export const obtenerHistorialObligacion = async (id) => {
+  const { data } = await api.get(
+    `obligaciones/${id}/historial/`
+  );
+  return data;
+};

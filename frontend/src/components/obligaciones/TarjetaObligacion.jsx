@@ -1,16 +1,11 @@
-import { Check, Edit, Power } from "lucide-react";
+import { Check, Edit, Power, History} from "lucide-react";
 
-function TarjetaObligacion({ obligacion, categoria, onRealizada, onCambiarEstado, onEditar }) {
+import { obtenerMonedaUsuario, formatearMonto } from "../../utils/moneda";
+import { formatearFecha } from "../../utils/fecha";
 
-  const formatearMonto = (monto) => {
-    return Number(monto || 0).toLocaleString("es-CO");
-  };
-  const formatearFecha = (fecha) => {
-    if (!fecha) {
-      return "Sin fecha límite";
-    }
-    return new Date(`${fecha}T00:00:00`).toLocaleDateString("es-CO");
-  };
+function TarjetaObligacion({ obligacion, categoria, onRealizada, onCambiarEstado, onEditar, onHistorial}) {
+
+  const moneda = obtenerMonedaUsuario();
 
   const getEstado = () => {
     if (!obligacion.activa) {
@@ -27,7 +22,10 @@ function TarjetaObligacion({ obligacion, categoria, onRealizada, onCambiarEstado
       };
     }
 
-    if (obligacion.dias_restantes !== null && obligacion.dias_restantes < 0) {
+    if (
+      obligacion.dias_restantes !== null &&
+      obligacion.dias_restantes < 0
+    ) {
       return {
         texto: "Vencida",
         clase: "estado-vencida",
@@ -60,15 +58,21 @@ function TarjetaObligacion({ obligacion, categoria, onRealizada, onCambiarEstado
         <div className="datos-obligacion">
           <div>
             <span>Monto estimado</span>
-            <strong>${formatearMonto(obligacion.monto_estimado)}</strong>
+            <strong>
+              {formatearMonto(obligacion.monto_estimado, moneda.codigo)}
+            </strong>
           </div>
           <div>
             <span>Frecuencia</span>
-            <strong>{obligacion.frecuencia || "Única"}</strong>
+            <strong>
+              {obligacion.frecuencia || "Única"}
+            </strong>
           </div>
           <div>
             <span>Fecha límite</span>
-            <strong>{formatearFecha(obligacion.fecha_limite)}</strong>
+            <strong>
+              {formatearFecha(obligacion.fecha_limite)}
+            </strong>
           </div>
           <div>
             <span>Tiempo</span>
@@ -86,6 +90,7 @@ function TarjetaObligacion({ obligacion, categoria, onRealizada, onCambiarEstado
       </div>
       {/* ACCIONES */}
       <div className="acciones-obligacion">
+        {/* REALIZADA */}
         {obligacion.activa && !obligacion.cumplida && (
           <button
             className="btn-realizada"
@@ -95,21 +100,52 @@ function TarjetaObligacion({ obligacion, categoria, onRealizada, onCambiarEstado
             Realizada
           </button>
         )}
-        <button className="btn-editar" onClick={() => onEditar(obligacion)}>
-          <Edit size={18} />
-          Editar
-        </button>
+
+        {/* EDITAR */}
         <button
-          className={obligacion.activa ? "btn-desactivar" : "btn-activar"}
+          className="btn-icono-accion btn-editar"
+          onClick={() => onEditar(obligacion)}
+          title="Editar obligación"
+          aria-label="Editar obligación"
+        >
+          <Edit size={18} />
+        </button>
+
+        {/* ACTIVAR / DESACTIVAR */}
+        <button
+          className={`btn-icono-accion ${
+            obligacion.activa
+              ? "btn-desactivar"
+              : "btn-activar"
+          }`}
           onClick={() => onCambiarEstado(obligacion)}
+          title={
+            obligacion.activa
+              ? "Desactivar obligación"
+              : "Activar obligación"
+          }
+          aria-label={
+            obligacion.activa
+              ? "Desactivar obligación"
+              : "Activar obligación"
+          }
         >
           <Power size={18} />
-          {obligacion.activa ? "Desactivar" : "Activar"}
         </button>
+
+        {/* HISTORIAL */}
+        <button
+          className="btn-icono-accion btn-historial"
+          onClick={() => onHistorial(obligacion)}
+          title="Ver historial"
+          aria-label="Ver historial"
+        >
+          <History size={18} />
+        </button>
+
       </div>
     </article>
   );
-  
 }
 
 export default TarjetaObligacion;

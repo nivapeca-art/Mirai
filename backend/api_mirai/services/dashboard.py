@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from django.utils import timezone
 from decimal import Decimal
 from django.db.models import Sum
-from ..models import Movimiento, Meta, Obligacion
+from ..models import Movimiento, Meta, Obligacion, HistorialObligacion
 
 MESES = [
     "Enero",
@@ -54,6 +54,104 @@ def calcular_variacion(actual, anterior):
     else "Sin cambios"
   }
 
+def obtener_notificaciones(usuario, hoy):
+  notificaciones = []
+  # NOTIFICACIONES DE METAS
+  metas = Meta.objects.filter(
+    usuario=usuario
+  ).order_by("fecha_limite")
+  for meta in metas:
+    # Ignorar metas completadas
+    if meta.estado == "COMPLETADA":
+      continue
+
+    if not meta.fecha_limite:
+      continue
+
+    restante = (
+      Decimal(meta.monto_objetivo)
+      - Decimal(meta.monto_actual)
+    )
+    # Si ya alcanzó el objetivo
+    if restante <= 0:
+      continue
+    dias_restantes = (
+      meta.fecha_limite - hoy
+    ).days
+    # Si la fecha ya pasó
+    if dias_restantes <= 0:
+      continue
+    # CALCULAR MESES RESTANTES
+    meses_restantes = max(
+      1,
+      round(dias_restantes / 30)
+    )
+    ahorro_mensual = (
+      restante / Decimal(meses_restantes)
+    )
+    ahorro_mensual = round(
+      ahorro_mensual,
+      2
+    )
+    notificaciones.append({
+      "tipo": "META",
+      "icono": "ahorro",
+      "titulo": "Planifica tu ahorro",
+      "mensaje": (
+        "Puedes realizar un abono de "
+        "{monto} "
+        "para estar un paso más cerca "
+        f'de tu meta "{meta.nombre}".'
+      ),
+      "monto": ahorro_mensual,
+      "meta_id": meta.id,
+      "fecha": meta.fecha_limite
+    })
+
+  # NOTIFICACIONES DE OBLIGACIONES
+  obligaciones = Obligacion.objects.filter(
+    usuario=usuario,
+    activa=True,
+    cumplida=False
+  ).order_by("fecha_limite")
+  for obligacion in obligaciones:
+    if not obligacion.fecha_limite:
+      continue
+    dias_restantes = (
+      obligacion.fecha_limite - hoy
+    ).days
+    # Mostrar únicamente cuando faltan 15 días o menos
+    if 0 <= dias_restantes <= 15:
+      if dias_restantes == 0:
+        mensaje = (
+          f"Hoy vence tu obligación "
+          f"\"{obligacion.nombre}\"."
+        )
+      elif dias_restantes == 1:
+        mensaje = (
+          f"Te queda 1 día para llegar al límite "
+          f"de tu obligación \"{obligacion.nombre}\"."
+        )
+      else:
+        mensaje = (
+          f"Estás a {dias_restantes} días de llegar "
+          f"al límite de tu obligación "
+          f"\"{obligacion.nombre}\"."
+        )
+
+      notificaciones.append({
+        "tipo": "OBLIGACION",
+        "icono": "obligacion",
+        "titulo": "Obligación próxima",
+        "mensaje": mensaje,
+        "monto_estimado": obligacion.monto_estimado,
+        "obligacion_id": obligacion.id,
+        "fecha": obligacion.fecha_limite,
+        "dias_restantes": dias_restantes
+      })
+
+  return notificaciones
+
 def obtener_dashboard(usuario, periodo="mes"):
   print("PERIODO RECIBIDO:", periodo)
   if periodo not in ["mes", "comparacion", "anual"]:
@@ -85,7 +183,10 @@ def obtener_dashboard(usuario, periodo="mes"):
     inicio_periodo = inicio_mes_actual
     fin_periodo = hoy
     inicio_periodo_anterior = inicio_mes_anterior
-    fin_periodo_anterior = fin_mes_anterior
+    fin_periodo_anterior = min(
+      fin_mes_anterior,
+      inicio_mes_anterior + timedelta(days=hoy.day - 1)
+    )
     nombre_periodo = "Mes vs mes anterior"
 
   elif periodo == "anual":
@@ -457,6 +558,7 @@ def obtener_dashboard(usuario, periodo="mes"):
   # --------------------------------------------------
   # OBLIGACIONES
   # --------------------------------------------------
+
   obligaciones = (
     Obligacion.objects
     .filter(
@@ -465,14 +567,54 @@ def obtener_dashboard(usuario, periodo="mes"):
     )
     .order_by("fecha_limite")
   )
+
   obligaciones_data = []
+
   for obligacion in obligaciones:
+
+    # -----------------------------------------------
+    # DÍAS RESTANTES
+    # -----------------------------------------------
+
     if obligacion.fecha_limite:
       dias_restantes = (
         obligacion.fecha_limite - hoy
       ).days
     else:
       dias_restantes = None
+
+    # -----------------------------------------------
+    # ÚLTIMA REALIZACIÓN
+    # -----------------------------------------------
+
+    ultimo_registro = (
+      HistorialObligacion.objects
+      .filter(
+        obligacion=obligacion,
+        usuario=usuario
+      )
+      .order_by(
+        "-fecha_realizada",
+        "-id"
+      )
+      .first()
+    )
+
+    if ultimo_registro:
+      ultima_fecha_realizada = (
+        ultimo_registro.fecha_realizada
+      )
+    else:
+      ultima_fecha_realizada = None
+
+    # -----------------------------------------------
+    # ¿SE CUMPLIÓ HOY?
+    # -----------------------------------------------
+
+    cumplida_hoy = (
+      ultima_fecha_realizada == hoy
+    )
+
     obligaciones_data.append({
       "id": obligacion.id,
       "nombre": obligacion.nombre,
@@ -480,7 +622,9 @@ def obtener_dashboard(usuario, periodo="mes"):
       "fecha_limite": obligacion.fecha_limite,
       "dias_restantes": dias_restantes,
       "activa": obligacion.activa,
-      "cumplida": obligacion.cumplida
+      "cumplida": obligacion.cumplida,
+      "cumplida_hoy": cumplida_hoy,
+      "ultima_fecha_realizada": ultima_fecha_realizada
     })
   # --------------------------------------------------
   # CATEGORÍA
@@ -549,6 +693,14 @@ def obtener_dashboard(usuario, periodo="mes"):
       "nombre": "",
       "simbolo": "$"
     }
+
+  # --------------------------------------------------
+  # NOTIFICACIONES
+  # --------------------------------------------------
+  notificaciones = obtener_notificaciones(
+    usuario,
+    hoy
+  )
   # --------------------------------------------------
   # RESPUESTA
   # --------------------------------------------------
@@ -574,10 +726,15 @@ def obtener_dashboard(usuario, periodo="mes"):
       "gastos": int(gastos),
       "ahorros": int(ahorros),
       "saldo": int(saldo),
+      "ingresos_anterior": int(ingresos_anterior),
+      "gastos_anterior": int(gastos_anterior),
+      "ahorros_anterior": int(ahorros_anterior),
+      "saldo_anterior": int(saldo_anterior),
       "comparacion": comparacion,
       "balance": balance_data,
       "metas": metas_data,
       "obligaciones": obligaciones_data,
       "gastos_por_categoria": gastos_categoria_data,
-      "gastos_por_categoria_anterior": gastos_categoria_anterior_data
+      "gastos_por_categoria_anterior": gastos_categoria_anterior_data,
+      "notificaciones": notificaciones
   }

@@ -7,10 +7,13 @@ import Balance from "../components/dashboard/Balance";
 import Comparacion from "../components/dashboard/Comparacion";
 import MetasDash from "../components/dashboard/MetasDash";
 import PanelLateral from "../components/dashboard/PanelLateral";
+import CampanaNotificaciones from "../components/dashboard/CampanaNotificaciones";
 
+import obtenerUsuarios from "../utils/obtenerUsuario";
 import "../styles/dashboard/dashboard.css";
 
 function Dashboard() {
+  const usuario = obtenerUsuarios();
   const [dashboard, setDashboard] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [periodo, setPeriodo] = useState("mes");
@@ -113,9 +116,13 @@ function Dashboard() {
         <div className="info-usuario">
           <p className="fecha">{fechaActual}</p>
           <span>
-            {obtenerMensajeUltimoAcceso(dashboard.usuario?.ultimo_acceso)}
+            {obtenerMensajeUltimoAcceso(usuario?.ultimo_acceso)}
           </span>
         </div>
+        <CampanaNotificaciones
+          notificaciones={dashboard?.notificaciones || []}
+        />
+
       </header>
       {/* RESUMEN */}
       <TarjetasResumen dashboard={dashboard} />

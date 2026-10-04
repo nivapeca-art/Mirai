@@ -100,3 +100,16 @@ class Obligacion(models.Model):
   activa = models.BooleanField(default=True)
   cumplida = models.BooleanField(default=False)
   usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+# -----------------------------------------------
+# HISTORIAL DE OBLIGACIONES
+# -----------------------------------------------
+class HistorialObligacion(models.Model):
+  obligacion = models.ForeignKey( Obligacion, on_delete=models.CASCADE, related_name="historial")
+  usuario = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+  nombre = models.CharField(max_length=100)
+  categoria = models.ForeignKey(Categoria,on_delete=models.PROTECT,null=True,blank=True)
+  monto_estimado = models.DecimalField(max_digits=12,decimal_places=2)
+  frecuencia = models.CharField(max_length=20,blank=True)
+  fecha_limite = models.DateField()
+  fecha_realizada = models.DateField(auto_now_add=True)

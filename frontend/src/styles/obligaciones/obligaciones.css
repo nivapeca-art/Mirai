@@ -343,7 +343,7 @@
 }
 /* ACTIVAR */
 .btn-activar {
-  background: #edf5fc;
+  background: white;
   border: 1px solid #d7e7f7;
   color: #3f80c9;
 }
@@ -351,7 +351,15 @@
   background: #e2effa;
   border-color: #c9def1;
 }
-
+.btn-historial{
+  background: white;
+  border: 1px solid #f7ad1a52;
+  color: #F7AD1A;
+}
+.btn-historial:hover{
+  background: #f7ad1a21;
+  border-color: #f7ad1ab9;
+}
 /* ESTADOS VACIOS */
 .estado-obligaciones {
   min-height: 240px;

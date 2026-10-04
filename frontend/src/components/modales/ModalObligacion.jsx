@@ -51,11 +51,14 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
       setMonto("");
       setFecha("");
       setFrecuencia("");
+      setError("");
       return;
     }
     // Cargar datos existentes
     setNombre(obligacion.nombre || "");
-    setCategoria(obligacion.categoria || "");
+
+    setCategoria(obligacion.categoria?.id || obligacion.categoria || "");
+
     setMonto(
       obligacion.monto_estimado
         ? Number(obligacion.monto_estimado).toLocaleString("es-CO")
@@ -63,6 +66,7 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
     );
     setFecha(obligacion.fecha_limite || "");
     setFrecuencia(obligacion.frecuencia || "");
+    setError("");
   }, [obligacion]);
 
   // FORMATEAR MONTO
@@ -78,26 +82,35 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
   const guardarObligacion = async (e) => {
     e.preventDefault();
     setError("");
-    // Validar nombre
+
+    // VALIDAR NOMBRE
     if (!nombre.trim()) {
       setError("Debes ingresar un nombre para la obligación.");
       return;
     }
-    // Validar monto
+
+    // VALIDAR MONTO
     if (!monto || Number(monto.replace(/\./g, "")) <= 0) {
       setError("El monto debe ser mayor a 0.");
       return;
     }
-    // Validar fecha
+
+    // VALIDAR FECHA
     if (!fecha) {
       setError("Debes seleccionar una fecha.");
       return;
     }
 
+    // VALIDAR FRECUENCIA
+    if (!frecuencia) {
+      setError("Debes seleccionar una frecuencia.");
+      return;
+    }
+
     try {
       setGuardando(true);
-      // Datos para crear la obligación
-      const obligacion = {
+
+      const datosObligacion = {
         nombre: nombre.trim(),
         monto_estimado: Number(monto.replace(/\./g, "")),
         fecha_limite: fecha,
@@ -105,23 +118,23 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
         frecuencia: frecuencia,
       };
       console.log(
-        edicion ? "OBLIGACIÓN A GUARDAR:" : "OBLIGACIÓN A CREAR",
-        obligacion,
+        edicion ? "OBLIGACIÓN A ACTUALIZAR:" : "OBLIGACIÓN A CREAR:",
+        datosObligacion,
       );
-      // CREAR OBLIGACIÓN
+      // CREAR
       if (!edicion) {
-        await crearObligacion(obligacion);
-        // EDITAR
-      } else {
-        await actualizarObligacion(obligacion.id, obligacion);
+        await crearObligacion(datosObligacion);
       }
-      // Avisar al Dashboard
+      // EDITAR
+      else {
+        await actualizarObligacion(obligacion.id, datosObligacion);
+      }
+      // Avisar al componente padre
       if (onGuardado) {
         await onGuardado();
       }
       // Cerrar modal
       onCerrar();
-      
     } catch (error) {
       console.error("ERROR OBLIGACIÓN:", error);
       console.error("RESPUESTA DEL SERVIDOR:", error.response?.data);
@@ -131,13 +144,13 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
         setError(
           primerError ||
             (edicion
-              ? "No se pudo actualizar la obligación"
+              ? "No se pudo actualizar la obligación."
               : "No se pudo crear la obligación."),
         );
       } else {
         setError(
           edicion
-            ? "No se pudo actualizar la obligación"
+            ? "No se pudo actualizar la obligación."
             : "No se pudo crear la obligación.",
         );
       }
@@ -145,6 +158,11 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
       setGuardando(false);
     }
   };
+  const categoriasGlobales = categorias.filter((item) => item.creada === null);
+
+  const categoriasPersonales = categorias.filter(
+    (item) => item.creada !== null,
+  );
 
   return (
     <ModalBase
@@ -170,11 +188,26 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
             onChange={(e) => setCategoria(e.target.value)}
           >
             <option value="">Sin categoría</option>
-            {categorias.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.nombre}
-              </option>
-            ))}
+
+            {categoriasGlobales.length > 0 && (
+              <optgroup label="Categorías generales">
+                {categoriasGlobales.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.nombre}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+
+            {categoriasPersonales.length > 0 && (
+              <optgroup label="Mis categorías">
+                {categoriasPersonales.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.nombre}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </select>
         </div>
         {/* MONTO */}
@@ -207,17 +240,17 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
             <option value="">Seleccionar frecuencia</option>
             <option value="Unica">Única</option>
             <option value="Semanal">Semanal</option>
-            <option value="Mensual">Mensual</option>
+            <option value="Mensual">Cada mes</option>
+            <option value="Bimestral">Cada 2 meses</option>
             <option value="Trimestral">Cada 3 meses</option>
             <option value="Semestral">Cada 6 meses</option>
-            <option value="Anual">Anual</option>
+            <option value="Anual">Cada año</option>
           </select>
         </div>
         {/* ERROR */}
         {error && <p className="error">{error}</p>}
         {/* BOTONES */}
         <div className="modal-acciones">
-          {/* Cerrar */}
           <button
             type="button"
             className="btn-cancelar"
@@ -226,9 +259,13 @@ function ModalObligacion({ onCerrar, onGuardado, obligacion = null }) {
           >
             Cancelar
           </button>
-          {/* Guardar */}
+
           <button type="submit" className="btn-guardar" disabled={guardando}>
-            {guardando ? "Guardando..." : "Crear obligación"}
+            {guardando
+              ? "Guardando..."
+              : edicion
+                ? "Actualizar obligación"
+                : "Crear obligación"}
           </button>
         </div>
       </form>

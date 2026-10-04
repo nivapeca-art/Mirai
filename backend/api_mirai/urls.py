@@ -13,7 +13,10 @@ from .views import (
   DashboardView,
   ReportePDFView,
   LoginView, 
-  ProyeccionView)
+  ProyeccionView,
+  CambiarPasswordView,
+  SolicitarRecuperacionView,
+  RestablecerPasswordView)
 
 router = DefaultRouter()
 router.register('monedas', MonedaViewSet, basename='monedas')
@@ -27,6 +30,9 @@ router.register('obligaciones', ObligacionViewSet, basename='obligaciones')
 urlpatterns = router.urls + [
   path("register/", RegisterView.as_view(), name="register"),
   path('login/', LoginView.as_view(), name='login'),
+  path( "cambiar-password/", CambiarPasswordView.as_view(), name="cambiar-password"),
+  path("recuperar-password/",SolicitarRecuperacionView.as_view(),name="recuperar-password"),
+  path("restablecer-password/",RestablecerPasswordView.as_view(),name="restablecer-password"),
   path('refresh/', TokenRefreshView.as_view(), name='refresh'),
   path('dashboard/',DashboardView.as_view(), name='dashboard'),
   path("dashboard/pdf/", ReportePDFView.as_view(), name="dashboard-pdf"),

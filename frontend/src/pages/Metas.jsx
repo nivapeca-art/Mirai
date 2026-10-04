@@ -1,31 +1,22 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import {
-  Calendar,
-  Goal,
-  Plus,
-  Target,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Calendar, Goal, Plus, Target, Pencil, Trash2 } from "lucide-react";
 
-import {
-  eliminarMeta,
-  obtenerMetas,
-} from "../services/metaServices";
+import { eliminarMeta, obtenerMetas } from "../services/metaServices";
 
 import ModalMeta from "../components/modales/ModalMeta";
 import ModalAbono from "../components/modales/ModalAbono";
 import ModalHistorialMeta from "../components/modales/ModalHistorialMeta";
 import ModalProyeccion from "../components/modales/ModalProyeccion";
 
-import { obtenerMonedaUsuario,formatearMonto } from "../utils/moneda";
+import { obtenerMonedaUsuario, formatearMonto } from "../utils/moneda";
 
 import "../styles/metas/metas.css";
 
 function Metas() {
   const localizar = useLocation();
+  const navegar = useNavigate();
 
   const [metas, setMetas] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -40,6 +31,7 @@ function Metas() {
 
   // Modal para abono
   const [metaAbono, setMetaAbono] = useState(null);
+  const [montoAbonoInicial, setMontoAbonoInicial] = useState("");
 
   // Modal para ver historial
   const [metaHistorial, setMetaHistorial] = useState(null);
@@ -53,6 +45,29 @@ function Metas() {
       setMetaEditar({});
     }
   }, [localizar.state]);
+
+  // Para que funcione con una notificación
+  useEffect(() => {
+    if (
+      localizar.state?.abrirAbono &&
+      localizar.state?.metaId &&
+      metas.length > 0
+    ) {
+      const metaEncontrada = metas.find(
+        (meta) => meta.id === localizar.state.metaId,
+      );
+
+      if (metaEncontrada) {
+        setMontoAbonoInicial(String(Math.round(Number(localizar.state.monto || 0))));
+        setMetaAbono(metaEncontrada);
+        // Consumimos el estado de la navegación
+        navegar(localizar.pathname, {
+          replace: true,
+          state: {},
+        });
+      }
+    }
+  }, [localizar.state, localizar.pathname, metas, moneda.codigo, navegar]);
 
   // CARGAR METAS
   useEffect(() => {
@@ -68,17 +83,11 @@ function Metas() {
       // Ordenar primero las que están en proceso
       // y después las completadas/canceladas
       const metasOrdenadas = [...data].sort((a, b) => {
-        if (
-          a.estado === "EN_PROCESO" &&
-          b.estado !== "EN_PROCESO"
-        ) {
+        if (a.estado === "EN_PROCESO" && b.estado !== "EN_PROCESO") {
           return -1;
         }
 
-        if (
-          a.estado !== "EN_PROCESO" &&
-          b.estado === "EN_PROCESO"
-        ) {
+        if (a.estado !== "EN_PROCESO" && b.estado === "EN_PROCESO") {
           return 1;
         }
 
@@ -125,9 +134,7 @@ function Metas() {
 
     return Math.min(
       100,
-      (Number(meta.monto_actual) /
-        Number(meta.monto_objetivo)) *
-        100,
+      (Number(meta.monto_actual) / Number(meta.monto_objetivo)) * 100,
     );
   };
 
@@ -156,19 +163,13 @@ function Metas() {
 
           <div>
             <h1>Metas</h1>
-            <p>
-              Define tus objetivos y haz seguimiento a tu
-              progreso.
-            </p>
+            <p>Define tus objetivos y haz seguimiento a tu progreso.</p>
           </div>
         </div>
 
         {metas.length > 0 && (
           <div className="acciones">
-            <button
-              className="boton-nuevo"
-              onClick={() => setMetaEditar({})}
-            >
+            <button className="boton-nuevo" onClick={() => setMetaEditar({})}>
               <Plus size={20} />
               Nueva meta
             </button>
@@ -179,9 +180,7 @@ function Metas() {
       {/* CONTENIDO */}
       <section className="metas-contenido">
         {cargando ? (
-          <div className="metas-estado">
-            Cargando metas...
-          </div>
+          <div className="metas-estado">Cargando metas...</div>
         ) : metas.length === 0 ? (
           /* SIN METAS */
           <div className="metas-vacio">
@@ -192,8 +191,8 @@ function Metas() {
             <h2>No tienes metas todavía</h2>
 
             <p>
-              Crea una meta para comenzar a organizar tus
-              objetivos y hacer seguimiento a tus ahorros.
+              Crea una meta para comenzar a organizar tus objetivos y hacer
+              seguimiento a tus ahorros.
             </p>
 
             <button
@@ -239,9 +238,7 @@ function Metas() {
                       <button
                         type="button"
                         className="meta-eliminar"
-                        onClick={() =>
-                          handleEliminarMeta(meta)
-                        }
+                        onClick={() => handleEliminarMeta(meta)}
                         title="Eliminar meta"
                         aria-label={`Eliminar meta ${meta.nombre}`}
                       >
@@ -252,9 +249,7 @@ function Metas() {
 
                   {/* DESCRIPCIÓN */}
                   {meta.descripcion && (
-                    <p className="meta-descripcion">
-                      {meta.descripcion}
-                    </p>
+                    <p className="meta-descripcion">{meta.descripcion}</p>
                   )}
 
                   {/* MONTOS */}
@@ -263,7 +258,7 @@ function Metas() {
                       <span>Ahorrado</span>
 
                       <strong>
-                        {formatearMonto(meta.monto_actual,moneda.codigo)}
+                        {formatearMonto(meta.monto_actual, moneda.codigo)}
                       </strong>
                     </div>
 
@@ -271,7 +266,7 @@ function Metas() {
                       <span>Objetivo</span>
 
                       <strong>
-                        {formatearMonto(meta.monto_objetivo,moneda.codigo)}
+                        {formatearMonto(meta.monto_objetivo, moneda.codigo)}
                       </strong>
                     </div>
                   </div>
@@ -281,9 +276,7 @@ function Metas() {
                     <div className="meta-progreso-info">
                       <span>Progreso</span>
 
-                      <strong>
-                        {progreso.toFixed(0)}%
-                      </strong>
+                      <strong>{progreso.toFixed(0)}%</strong>
                     </div>
 
                     <div className="meta-progreso-barra">
@@ -300,7 +293,6 @@ function Metas() {
                   {meta.fecha_limite && (
                     <div className="meta-fecha">
                       <Calendar size={16} />
-
                       Fecha límite:{" "}
                       {new Date(
                         `${meta.fecha_limite}T00:00:00`,
@@ -313,9 +305,7 @@ function Metas() {
                     {meta.estado === "EN_PROCESO" && (
                       <button
                         className="meta-abono"
-                        onClick={() =>
-                          setMetaAbono(meta)
-                        }
+                        onClick={() => setMetaAbono(meta)}
                       >
                         + Hacer abono
                       </button>
@@ -323,18 +313,14 @@ function Metas() {
 
                     <button
                       className="meta-detalle"
-                      onClick={() =>
-                        setMetaHistorial(meta)
-                      }
+                      onClick={() => setMetaHistorial(meta)}
                     >
                       Ver más
                     </button>
 
                     <button
                       className="meta-proyeccion"
-                      onClick={() =>
-                        setMetaProyeccion(meta)
-                      }
+                      onClick={() => setMetaProyeccion(meta)}
                     >
                       Proyección
                     </button>
@@ -349,11 +335,7 @@ function Metas() {
       {/* MODAL CREAR / EDITAR META */}
       {metaEditar !== null && (
         <ModalMeta
-          meta={
-            Object.keys(metaEditar).length === 0
-              ? null
-              : metaEditar
-          }
+          meta={Object.keys(metaEditar).length === 0 ? null : metaEditar}
           onCerrar={() => setMetaEditar(null)}
           onGuardado={cargarMetas}
         />
@@ -363,7 +345,11 @@ function Metas() {
       {metaAbono && (
         <ModalAbono
           meta={metaAbono}
-          onCerrar={() => setMetaAbono(null)}
+          montoInicial={montoAbonoInicial}
+          onCerrar={() => {
+            setMetaAbono(null);
+            setMontoAbonoInicial("");
+          }}
           onGuardado={cargarMetas}
         />
       )}

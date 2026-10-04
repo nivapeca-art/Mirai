@@ -1,6 +1,6 @@
-import { ClipboardList, CircleCheck, Clock, Power } from "lucide-react";
+import { ClipboardList, Clock, Power } from "lucide-react";
 
-function ResumenObligaciones({ total, activas, pendientes, realizadas, filtro, onFiltro }) {
+function ResumenObligaciones({ total, activas, pendientes, filtro, onFiltro }) {
 
   return (
     <div className="resumen-obligaciones">
@@ -36,22 +36,7 @@ function ResumenObligaciones({ total, activas, pendientes, realizadas, filtro, o
           <strong>{pendientes}</strong>
         </div>
       </button>
-      {/* REALIZADAS */}
-      <button
-        type="button"
-        className={`tarjeta-resumen ${
-          filtro === "realizadas" ? "activa" : ""
-        }`}
-        onClick={() => onFiltro("realizadas")}
-      >
-        <div className="icono-resumen">
-          <CircleCheck size={22} />
-        </div>
-        <div>
-          <span>Realizadas</span>
-          <strong>{realizadas}</strong>
-        </div>
-      </button>
+      
       {/* ACTIVAS */}
       <button
         type="button"

@@ -1,0 +1,419 @@
+.perfil {
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+/* ---------- ENCABEZADO ---------- */
+.encabezado-perfil {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+.titulo-perfil {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.icono-titulo-perfil {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #eaf2f8;
+  color: #234e70;
+}
+.titulo-perfil h1 {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 700;
+  color: #053b52;
+}
+.titulo-perfil p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ---------- CONTENEDOR ---------- */
+.contenedor-perfil {
+  background: white;
+  border: 1px solid #e1e6eb;
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 5px 18px rgba(35, 78, 112, 0.06);
+  margin-bottom: 20px;
+}
+
+/* ---------- CABECERA ---------- */
+.cabecera-perfil {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #edf0f3;
+}
+.icono-informacion-perfil {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: #eaf2f8;
+  color: #234e70;
+}
+.cabecera-perfil h2 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #263238;
+}
+.cabecera-perfil p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ---------- IDENTIDAD ---------- */
+.perfil-identidad {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid #edf0f3;
+}
+.perfil-avatar-grande {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 18px;
+  background: #053b52;
+  color: white;
+  font-size: 25px;
+  font-weight: 700;
+}
+.perfil-identidad-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.perfil-identidad-datos h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #263238;
+}
+.perfil-identidad-datos span {
+  font-size: 13px;
+  color: #737b84;
+}
+
+/* ---------- GRID INFORMACIÓN ---------- */
+.grid-informacion-perfil {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+
+/* ---------- DATO ---------- */
+.dato-perfil {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px;
+  background: #f7f8fa;
+  border: 1px solid #e1e6eb;
+  border-radius: 13px;
+}
+.icono-dato-perfil {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #e6e9ed;
+}
+.dato-perfil > div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.dato-perfil span {
+  font-size: 11px;
+  color: #7c858e;
+}
+.dato-perfil strong {
+  font-size: 13px;
+  font-weight: 600;
+  color: #263238;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dato-perfil small {
+  font-size: 11px;
+  color: #8a939c;
+}
+
+/* ---------- SEGURIDAD ---------- */
+.seguridad-perfil {
+  margin-bottom: 0;
+}
+.icono-seguridad-perfil {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: #fff6dc;
+  color: #f7ad1a;
+}
+
+/* ---------- FORMULARIO PASSWORD ---------- */
+.formulario-password {
+  margin-top: 22px;
+}
+/* TITULO */
+.titulo-password {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 20px;
+  color: #234e70;
+}
+.titulo-password > svg {
+  flex-shrink: 0;
+}
+.titulo-password div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.titulo-password strong {
+  font-size: 14px;
+  color: #263238;
+}
+.titulo-password span {
+  font-size: 11px;
+  color: #7c858e;
+}
+/* CAMPOS */
+.campo-password {
+  margin-bottom: 16px;
+}
+.campo-password label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #263238;
+}
+.input-password {
+  position: relative;
+  width: 100%;
+}
+.input-password input {
+  width: 100%;
+  height: 43px;
+  box-sizing: border-box;
+  padding: 0 45px 0 13px;
+  border: 1px solid #dce2e7;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #263238;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.input-password input:hover {
+  border-color: #b7c1ca;
+}
+.input-password input:focus {
+  border-color: #053b52;
+  box-shadow: 0 0 0 3px rgba(35, 78, 112, 0.08);
+}
+
+/* ---------- BOT[ON MOSTRAR CONTRASEÑA ---------- */
+.input-password button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #7c858e;
+  cursor: pointer;
+  border-radius: 7px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.input-password button:hover {
+  color: #053b52;
+  background: #f1f4f7;
+}
+
+/* ---------- REQUISITOS ---------- */
+.requisitos-password {
+  margin-top: 5px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  background: #f7f8fa;
+  border: 1px solid #e1e6eb;
+  border-radius: 11px;
+}
+.requisitos-password span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+.requisitos-password ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  margin: 0;
+  padding-left: 16px;
+}
+.requisitos-password li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #737b84;
+  transition:color 0.2s ease;
+}
+.requisitos-password li::first-letter {
+  font-weight: 700;
+}
+.requisitos-password li.requisito-cumplido {
+  color: #2e8b57;
+  font-weight: 600;
+}
+
+/* ---------- MENSAJE ---------- */
+.mensaje-perfil {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+.mensaje-perfil-exito {
+  color: #2e7d32;
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+}
+.mensaje-perfil-error {
+  color: #c62828;
+  background: #fdecec;
+  border: 1px solid #f3c6c6;
+}
+
+/* ---------- ACCIONES ---------- */
+.acciones-password {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid #edf0f3;
+}
+
+/* ---------- BOT[ON ---------- */
+.btn-cambiar-password {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 190px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  background: #f7ad1a;
+  color: white;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.btn-cambiar-password:hover {
+  background: #ce9013;
+  transform: translateY(-1px);
+  box-shadow:0 5px 12px rgba(35, 78, 112, 0.2);
+}
+.btn-cambiar-password:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+
+/* ---------- SPINNER ---------- */
+.spinner-perfil {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: girar-perfil 0.8s linear infinite;
+}
+@keyframes girar-perfil {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 800px) {
+  .grid-informacion-perfil {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .perfil {
+    padding-bottom: 20px;
+  }
+  .contenedor-perfil {
+    padding: 18px;
+  }
+  .grid-informacion-perfil {
+    grid-template-columns: 1fr;
+  }
+  .acciones-password {
+    justify-content: stretch;
+  }
+  .btn-cambiar-password {
+    width: 100%;
+  }
+  .requisitos-password ul {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

@@ -20,7 +20,7 @@ function ModalMeta({ meta = null, onCerrar, onGuardado }) {
 
   const [monto, setMonto] = useState(
     meta?.monto_objetivo
-      ? formatearMontoInput(String(meta.monto_objetivo),moneda.codigo)
+      ? formatearMonto(meta.monto_objetivo, moneda.codigo)
       : "",
   );
 

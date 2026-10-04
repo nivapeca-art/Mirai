@@ -11,8 +11,9 @@ import {
   convertirMontoParaAPI,
 } from "../../utils/moneda";
 
-function ModalAbono({ meta, onCerrar, onGuardado }) {
-  const [monto, setMonto] = useState("");
+function ModalAbono({ meta, onCerrar, onGuardado,  montoInicial = "" }) {
+  // Monto inicial abre el modal desde una notificación
+  const [monto, setMonto] = useState(montoInicial);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
 

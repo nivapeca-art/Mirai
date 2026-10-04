@@ -7,6 +7,7 @@ import ModalBase from "./ModalBase";
 import { obtenerProyeccionMeta } from "../../services/proyeccionServices";
 
 import { obtenerMonedaUsuario, formatearMonto } from "../../utils/moneda";
+import { formatearFecha, obtenerFechaHoy, convertirFechaLocal } from "../../utils/fecha";
 
 import "../../styles/modales/modalProyeccion.css";
 
@@ -15,6 +16,7 @@ function ModalProyeccion({ meta, onCerrar }) {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const moneda = obtenerMonedaUsuario();
+  const hoy = obtenerFechaHoy();
 
   // CARGAR PROYECCIÓN
   useEffect(() => {
@@ -37,14 +39,6 @@ function ModalProyeccion({ meta, onCerrar }) {
     }
   };
 
-  // FORMATEAR FECHA
-  const formatearFecha = (fecha) => {
-    if (!fecha) {
-      return "Sin fecha límite";
-    }
-    return new Date(`${fecha}T00:00:00`).toLocaleDateString("es-CO");
-  };
-
   // FECHA PROYECTADA
   const obtenerFechaProyectada = () => {
     if (
@@ -54,7 +48,7 @@ function ModalProyeccion({ meta, onCerrar }) {
     ) {
       return null;
     }
-    const fecha = new Date();
+    const fecha = convertirFechaLocal(hoy);
     fecha.setMonth(fecha.getMonth() + proyeccion.meses_estimados);
     return fecha.toLocaleDateString("es-CO");
   };
@@ -69,12 +63,11 @@ function ModalProyeccion({ meta, onCerrar }) {
     ) {
       return null;
     }
-    const hoy = new Date();
-    const fechaProyectada = new Date(hoy);
+    const fechaProyectada = convertirFechaLocal(hoy);
     fechaProyectada.setMonth(
       fechaProyectada.getMonth() + proyeccion.meses_estimados,
     );
-    const fechaLimite = new Date(`${proyeccion.meta.fecha_limite}T00:00:00`);
+    const fechaLimite = convertirFechaLocal(proyeccion.meta.fecha_limite);
     const diferencia = fechaLimite.getTime() - fechaProyectada.getTime();
     return Math.round(diferencia / (1000 * 60 * 60 * 24));
   };

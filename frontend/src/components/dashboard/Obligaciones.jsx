@@ -1,13 +1,24 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { marcarObligacionCumplida } from "../../services/obligacionServices";
+import {
+  marcarObligacionCumplida,
+  deshacerObligacionCumplida,
+} from "../../services/obligacionServices";
+
+import { obtenerMonedaUsuario, formatearMonto } from "../../utils/moneda";
 
 function Obligaciones({ dashboard, onGuardado }) {
   const navigate = useNavigate();
-  const { obligaciones = [], moneda } = dashboard;
-  const simbolo = moneda?.simbolo || "$";
+
+  const { obligaciones = [] } = dashboard;
+
+  const moneda = obtenerMonedaUsuario();
+  const simbolo = moneda.simbolo;
+
   const [actualizando, setActualizando] = useState(null);
+
+  // OBLIGACIONES CERCANAS
   const obligacionesCercanas = obligaciones
     .filter((obligacion) => {
       // No mostrar obligaciones inactivas
@@ -15,14 +26,37 @@ function Obligaciones({ dashboard, onGuardado }) {
         return false;
       }
       // No mostrar obligaciones vencidas
-      if (obligacion.dias_restantes !== null && obligacion.dias_restantes < 0) {
+      if (
+        obligacion.dias_restantes !== null &&
+        obligacion.dias_restantes < 0 &&
+        !obligacion.cumplida_hoy
+      ) {
+        return false;
+      }
+      // Mostrar obligaciones que estén a 15 días o menos.
+      // EXCEPTO las que fueron cumplidas hoy
+      if (
+        obligacion.dias_restantes !== null &&
+        obligacion.dias_restantes > 15 &&
+        !obligacion.cumplida_hoy
+      ) {
         return false;
       }
       return true;
     })
-    .slice(0, 3);
+    .sort((a, b) => {
+      // Las cumplidas hoy tienen prioridad para mantenerse visibles
+      if (a.cumplida_hoy && !b.cumplida_hoy) {
+        return -1;
+      }
+      if (!a.cumplida_hoy && b.cumplida_hoy) {
+        return 1;
+      }
+      return a.dias_restantes - b.dias_restantes;
+    })
+    .slice(0, 10);
 
-  // ESTADO
+  // ESTADO DE LA OBLIGACIÓN
   const obtenerEstado = (dias) => {
     if (dias < 0) {
       return {
@@ -30,33 +64,29 @@ function Obligaciones({ dashboard, onGuardado }) {
         clase: "obligacion-vencida",
       };
     }
-
     if (dias === 0) {
       return {
         texto: "Hoy",
         clase: "obligacion-hoy",
       };
     }
-
     if (dias <= 3) {
       return {
         texto: `En ${dias} días`,
         clase: "obligacion-proxima",
       };
     }
-
     return {
       texto: `En ${dias} días`,
       clase: "obligacion-normal",
     };
   };
-  // OBLIGACIÓN CUMPLIDA
-  const cambiarCumplida = async (id, estadoActual) => {
+
+  // MARCAR COMO CUMPLIDA
+  const cambiarCumplida = async (id) => {
     try {
       setActualizando(id);
-      // USA EL SERVICIO DE OBLIGACIÓN
-      await marcarObligacionCumplida(id, !estadoActual);
-      // Actualizar el dashboard
+      await marcarObligacionCumplida(id, true);
       await onGuardado();
     } catch (error) {
       console.error("Error actualizando obligación:", error);
@@ -65,61 +95,93 @@ function Obligaciones({ dashboard, onGuardado }) {
     }
   };
 
+  // DESHACER CUMPLIDA
+  const deshacerCumplida = async (id) => {
+    try {
+      setActualizando(id);
+      await deshacerObligacionCumplida(id);
+      await onGuardado();
+    } catch (error) {
+      console.error("Error deshaciendo obligación:", error);
+    } finally {
+      setActualizando(null);
+    }
+  };
+
   return (
     <section className="obligaciones">
+      {/* HEADER */}
       <div className="obligaciones-header">
         <div>
           <h2>Obligaciones</h2>
           <p>Próximos vencimientos</p>
         </div>
-
         <button onClick={() => navigate("/obligaciones")}>Ver todas</button>
       </div>
 
+      {/* SIN OBLIGACIONES */}
       {obligacionesCercanas.length === 0 ? (
-        // No tiene obligaciónes pendientes
         <div className="obligaciones-vacio">
-          <p>No tienes obligaciones pendientes.</p>
+          <p>No tienes obligaciones próximas.</p>
         </div>
       ) : (
-        // Muestra las obligaciones pendientes
+        /* LISTA DE OBLIGACIONES */
         <div className="obligaciones-lista">
           {obligacionesCercanas.map((obligacion) => {
             const estado = obtenerEstado(obligacion.dias_restantes);
+            // Una obligación se considera cumplida si esta marcada o se realizo hoy.
+            const estaCumplida = obligacion.cumplida || obligacion.cumplida_hoy;
 
             return (
               <div
                 className={`obligacion-item ${
-                  obligacion.cumplida ? "obligacion-cumplida" : ""
+                  estaCumplida ? "obligacion-cumplida" : ""
                 }`}
                 key={obligacion.id}
               >
-                {/* Botón para cambiar de pendiente a cumplida o al reves */}
+                {/* BOTÓN ESTADO */}
                 <button
                   className={
-                    obligacion.cumplida
+                    estaCumplida
                       ? "estado-obligacion cumplida"
                       : "estado-obligacion pendiente"
                   }
                   disabled={actualizando === obligacion.id}
-                  onClick={() =>
-                    cambiarCumplida(obligacion.id, obligacion.cumplida)
+                  onClick={() => {
+                    if (estaCumplida) {
+                      deshacerCumplida(obligacion.id);
+                    } else {
+                      cambiarCumplida(obligacion.id);
+                    }
+                  }}
+                  title={
+                    estaCumplida
+                      ? "Deshacer realización"
+                      : "Marcar como cumplida"
                   }
                 >
-                  {obligacion.cumplida ? "✓ Cumplida" : "○ Pendiente"}
+                  {estaCumplida ? "✓ Cumplida" : "○ Pendiente"}
                 </button>
-                {/* Información de la obligación */}
+
+                {/* INFORMACIÓN */}
                 <div className="obligacion-info">
                   <h3>{obligacion.nombre}</h3>
                   <span>
-                    {simbolo}{" "}
-                    {Number(obligacion.monto_estimado).toLocaleString("es-CO")}
+                    {formatearMonto(obligacion.monto_estimado, moneda.codigo)}
                   </span>
                 </div>
-                {/* Cambio de estado */}
-                {!obligacion.cumplida && (
-                  <span className={estado.clase}>{estado.texto}</span>
-                )}
+                {/* FECHA / ESTADO */}
+                <span
+                  className={
+                    estaCumplida ? "obligacion-cumplida-hoy" : estado.clase
+                  }
+                >
+                  {obligacion.cumplida_hoy
+                    ? "Cumplida hoy"
+                    : estaCumplida
+                      ? "Cumplida"
+                      : estado.texto}
+                </span>
               </div>
             );
           })}

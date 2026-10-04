@@ -10,6 +10,8 @@ import GraficaCategorias from "../components/graficas/GraficaCategorias";
 import GraficaBalance from "../components/graficas/GraficaBalance";
 import GraficaMetas from "../components/graficas/GraficaMetas";
 
+import { formatearFecha } from "../utils/fecha";
+
 import "../styles/graficas/graficas.css";
 
 function Graficas() {
@@ -89,17 +91,6 @@ function Graficas() {
   if (!dashboard) {
     return null;
   }
-
-  const formatearFecha = (fecha) => {
-    if (!fecha) return "";
-    const [anio, mes, dia] = fecha.split("-");
-    const fechaLocal = new Date(Number(anio), Number(mes) - 1, Number(dia));
-    return fechaLocal.toLocaleDateString("es-CO", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
 
   return (
     <div className="graficas">

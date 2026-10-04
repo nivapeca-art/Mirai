@@ -1,0 +1,277 @@
+.restablecer-password {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  box-sizing: border-box;
+  background: #f7f8fa;
+}
+
+/* ---------- CARD ---------- */
+.restablecer-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 38px 36px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #e1e6eb;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(5, 59, 82, 0.08);
+}
+
+/* ---------- ICONO ---------- */
+.restablecer-icono {
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: #eaf2f8;
+  color: #053b52;
+}
+.restablecer-icono.exito {
+  background: #edf8f1;
+  color: #2e8b57;
+}
+
+/* ---------- TITULO ---------- */
+.restablecer-card h1 {
+  margin: 0;
+  color: #263238;
+  font-size: 25px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ---------- DESCRIPCIÓN ---------- */
+.restablecer-descripcion {
+  margin: 12px 0 26px;
+  color: #737b84;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ---------- FORMULARIO ---------- */
+.restablecer-card form {
+  width: 100%;
+}
+.restablecer-card label {
+  display: block;
+  margin-bottom: 8px;
+  color: #263238;
+  font-size: 13px;
+  font-weight: 600;
+}
+.restablecer-card label:not(:first-child) {
+  margin-top: 20px;
+}
+
+/* ---------- CAMPOS ---------- */
+.campo-restablecer {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px 0 14px;
+  box-sizing: border-box;
+  border: 1px solid #d9e0e5;
+  border-radius: 10px;
+  background: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.campo-restablecer:focus-within {
+  border-color: #234e70;
+  box-shadow: 0 0 0 3px rgba(35, 78, 112, 0.10);
+}
+.campo-restablecer > svg {
+  flex-shrink: 0;
+  color: #737b84;
+}
+.campo-restablecer input {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #263238;
+  font-family: inherit;
+  font-size: 14px;
+}
+.campo-restablecer input::placeholder {
+  color: #a3aab1;
+}
+
+/* ---------- MOSTRAR / OCULTAR CONTRASEÑA ---------- */
+.boton-mostrar-password {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+  background: transparent !important;
+  color: #737b84 !important;
+  cursor: pointer;
+  box-shadow: none !important;
+}
+.boton-mostrar-password:hover {
+  color: #053b52 !important;
+  background: transparent !important;
+}
+
+/* ---------- REQUISITOS ---------- */
+.requisitos-password {
+  margin-top: 10px;
+  margin-bottom: 4px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #f7f8fa;
+}
+.requisitos-password > span {
+  display: block;
+  margin-bottom: 7px;
+  color: #737b84;
+  font-size: 11px;
+  font-weight: 600;
+}
+.requisitos-password ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.requisitos-password li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #737b84;
+  font-size: 11px;
+  transition: color 0.2s ease;
+}
+.requisitos-password li.requisito-cumplido {
+  color: #2e8b57;
+  font-weight: 600;
+}
+
+/* ---------- MENSAJE ---------- */
+.confirmacion-password {
+  margin-top: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+.confirmacion-password.coincide {
+  color: #2e8b57;
+}
+.confirmacion-password.no-coincide {
+  color: #c94c4c;
+}
+.mensaje-restablecer {
+  margin-top: 15px;
+  padding: 11px 13px;
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.mensaje-restablecer.exito {
+  border: 1px solid #b9dec9;
+  background: #edf8f1;
+  color: #2e8b57;
+}
+.mensaje-restablecer.error {
+  border: 1px solid #e5bcbc;
+  background: #fdf0f0;
+  color: #a33a3a;
+}
+
+/* ---------- BOTÓN PRINCIPAL ---------- */
+.boton-restablecer {
+  width: 100%;
+  height: 46px;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 10px;
+  background: #f7ad1a;
+  color: #263238;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.boton-restablecer:hover {
+  background: #ce9013;
+  color: #ffffff;
+}
+.boton-restablecer:active {
+  transform: scale(0.98);
+}
+.boton-restablecer:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ---------- VOLVER AL LOGIN ---------- */
+.volver-login {
+  margin-top: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #234e70;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.volver-login:hover {
+  color: #053b52;
+}
+
+/* ---------- ESTADO DE EXITO ---------- */
+.restablecer-exito {
+  text-align: center;
+}
+.restablecer-exito h1 {
+  margin-bottom: 12px;
+}
+.restablecer-exito p {
+  margin: 0;
+  color: #737b84;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 500px) {
+  .restablecer-password {
+    padding: 20px 15px;
+  }
+  .restablecer-card {
+    padding: 30px 24px;
+    border-radius: 15px;
+  }
+  .restablecer-card h1 {
+    font-size: 22px;
+  }
+  .restablecer-descripcion {
+    font-size: 13px;
+  }
+}

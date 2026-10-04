@@ -1,11 +1,29 @@
-from rest_framework import generics
+from rest_framework import generics,status
+from rest_framework.decorators import action
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from django.contrib.auth import get_user_model 
 from django.db.models import Q
-from .models import Moneda,Pais,Meta,Categoria,Movimiento,Obligacion
-from .serializer import MonedaSerializer,PaisSerializer,UsuarioSerializer,MetaSerializer,CategoriaSerializer,MovimientoSerializer,ObligacionSerializer,LoginSerializer
+from dateutil.relativedelta import relativedelta #Maneja correctamente los cambios de mes
+from .models import Moneda,Pais,Meta,Categoria,Movimiento,Obligacion,HistorialObligacion
+from .serializer import (
+  MonedaSerializer,
+  PaisSerializer,
+  UsuarioSerializer,
+  MetaSerializer,
+  CategoriaSerializer,
+  MovimientoSerializer,
+  ObligacionSerializer,
+  LoginSerializer,
+  CambiarPasswordSerializer,
+  SolicitarRecuperacionSerializer,
+  RestablecerPasswordSerializer,
+  HistorialObligacionSerializer)
+#Cambio de contraseña
+from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 #Dashboard y PDF
 from rest_framework.views import APIView
 from .services.dashboard import obtener_dashboard
@@ -47,7 +65,105 @@ class UsuarioViewSet (ModelViewSet):
 # LOGIN
 # -----------------------------------------------
 class LoginView(TokenObtainPairView):
-    serializer_class = LoginSerializer
+  serializer_class = LoginSerializer
+
+# -----------------------------------------------
+# CAMBIAR CONTRASEÑA DESDE EL PERFIL
+# -----------------------------------------------
+class CambiarPasswordView(APIView):
+  permission_classes = [IsAuthenticated]
+  def post(self, request):
+    serializer = CambiarPasswordSerializer(
+      data=request.data,
+      context={"request": request}
+    )
+    if serializer.is_valid():
+      usuario = request.user
+      usuario.set_password(
+        serializer.validated_data["password_nueva"]
+      )
+      usuario.save()
+      return Response(
+        {
+          "detail": "La contraseña se ha cambiado correctamente."
+        },
+        status=status.HTTP_200_OK
+      )
+    return Response(
+      serializer.errors,
+      status=status.HTTP_400_BAD_REQUEST
+    )
+
+# -----------------------------------------------
+# OLVIDAR CONTRASEÑA DESDE EL LOGIN
+# -----------------------------------------------
+#Solicitar recuperación
+class SolicitarRecuperacionView(APIView):
+  permission_classes = [AllowAny]
+  def post(self, request):
+    serializer = SolicitarRecuperacionSerializer(data=request.data)
+    if not serializer.is_valid():
+      return Response(
+        serializer.errors,
+        status=status.HTTP_400_BAD_REQUEST
+      )
+    email = serializer.validated_data["email"]
+    usuario = User.objects.get(email__iexact=email)
+    uid = str(usuario.pk)
+    token = default_token_generator.make_token(usuario)
+    enlace = (
+            f"http://localhost:5173/"
+            f"restablecer-password/{uid}/{token}"
+    )
+    print("\n" + "=" * 70)
+    print("ENLACE DE RECUPERACIÓN:")
+    print(enlace)
+    print("=" * 70 + "\n")
+    send_mail(
+      subject="Restablecimiento de contraseña - Mirai",
+      message=(
+        "Has solicitado restablecer tu contraseña de Mirai.\n\n"
+        f"Utiliza el siguiente enlace:\n\n{enlace}\n\n"
+        "Si no solicitaste este cambio, puedes ignorar este mensaje."
+      ),
+      from_email=settings.DEFAULT_FROM_EMAIL,
+      recipient_list=[email],
+      fail_silently=False,
+    )
+    return Response(
+      {
+        "detail": (
+            "Si el correo está registrado, "
+            "se ha generado un enlace de recuperación."
+        )
+      },
+      status=status.HTTP_200_OK
+    )
+# Restablecer contraseña
+class RestablecerPasswordView(APIView):
+  permission_classes = [AllowAny]
+  def post(self, request):
+    serializer = RestablecerPasswordSerializer(
+      data=request.data
+    )
+    if serializer.is_valid():
+      usuario = serializer.validated_data["usuario"]
+      usuario.set_password(
+        serializer.validated_data["password_nueva"]
+      )
+      usuario.save()
+      return Response(
+        {
+          "detail": (
+            "La contraseña se ha restablecido correctamente."
+          )
+        },
+        status=status.HTTP_200_OK
+      )
+    return Response(
+      serializer.errors,
+      status=status.HTTP_400_BAD_REQUEST
+    )
 
 # -----------------------------------------------
 # METAS
@@ -162,21 +278,120 @@ class MovimientoViewSet(ModelViewSet):
 
 # -----------------------------------------------
 # OBLIGACIONES
-# -----------------------------------------------  
+# -----------------------------------------------
+
 class ObligacionViewSet(ModelViewSet):
   permission_classes = [IsAuthenticated]
   serializer_class = ObligacionSerializer
+
   def get_queryset(self):
-    queryset = Obligacion.objects.filter(
-      usuario=self.request.user)
+    queryset = Obligacion.objects.filter(usuario=self.request.user)
     activa = self.request.query_params.get("activa")
     if activa is not None:
       queryset = queryset.filter(activa=activa.lower() == "true")
     return queryset
-  
+
   def perform_create(self, serializer):
     serializer.save(usuario=self.request.user)
 
+  # MARCAR / DESMARCAR OBLIGACIÓN
+  def perform_update(self, serializer):
+    obligacion = self.get_object()
+    cumplida = self.request.data.get("cumplida")
+
+    # MARCAR COMO CUMPLIDA
+    if cumplida is True or cumplida == "true":
+      # Guardamos la fecha original en el historial
+      HistorialObligacion.objects.create(
+        obligacion=obligacion,
+        usuario=obligacion.usuario,
+        nombre=obligacion.nombre,
+        categoria=obligacion.categoria,
+        monto_estimado=obligacion.monto_estimado,
+        frecuencia=obligacion.frecuencia,
+        fecha_limite=obligacion.fecha_limite,
+      )
+      # Calcula la siguiente fecha
+      nueva_fecha = self.calcular_siguiente_fecha(
+        obligacion.fecha_limite,
+        obligacion.frecuencia
+      )
+      # Si tiene una frecuencia recurrente, avanza la fecha y deja la obligación pendiente
+      if nueva_fecha != obligacion.fecha_limite:
+        serializer.save( fecha_limite=nueva_fecha, cumplida=False)
+      # Si no es recurrente, queda cumplida
+      else:
+        serializer.save(cumplida=True)
+      return
+
+    # DESMARCAR COMO CUMPLIDA
+    if cumplida is False or cumplida == "false":
+      serializer.save(cumplida=False)
+      return
+
+    # CUALQUIER OTRA EDICIÓN NORMAL
+    serializer.save()
+
+  # CALCULAR SIGUIENTE FECHA
+  def calcular_siguiente_fecha(self, fecha, frecuencia):
+    frecuencia = (frecuencia or "").strip().lower()
+    if frecuencia == "semanal":
+      return fecha + relativedelta(weeks=1)
+    if frecuencia == "mensual":
+      return fecha + relativedelta(months=1)
+    if frecuencia == "bimestral":
+      return fecha + relativedelta(months=2)
+    if frecuencia == "trimestral":
+      return fecha + relativedelta(months=3)
+    if frecuencia == "semestral":
+      return fecha + relativedelta(months=6)
+    if frecuencia == "anual":
+      return fecha + relativedelta(years=1)
+    # Sin frecuencia o frecuencia no reconocida
+    return fecha
+
+  # HISTORIAL
+  @action(detail=True, methods=["get"])
+  def historial(self, request, pk=None):
+    obligacion = self.get_object()
+    historial = HistorialObligacion.objects.filter( obligacion=obligacion, usuario=request.user).order_by("-fecha_limite")
+    serializer = HistorialObligacionSerializer( historial, many=True)
+    return Response(serializer.data)
+
+  # DESHACER OBLIGACIÓN CUMPLIDA
+  @action(detail=True, methods=["post"])
+  def deshacer_cumplida(self, request, pk=None):
+    obligacion = self.get_object()
+    # Buscamos la última realización
+    ultimo_registro = HistorialObligacion.objects.filter( obligacion=obligacion, usuario=request.user
+    ).order_by( "-fecha_realizada", "-id"
+    ).first()
+    # No hay nada que deshacer
+    if not ultimo_registro:
+      return Response(
+        {
+          "detail": "No existe un registro para deshacer."
+        },
+        status=400
+      )
+
+    # Si era una obligación recurrente, devuelve la fecha anterior
+    if ultimo_registro.fecha_limite != obligacion.fecha_limite:
+      obligacion.fecha_limite = (ultimo_registro.fecha_limite)
+    # Vuelve a dejarla pendiente
+    obligacion.cumplida = False
+    obligacion.save(
+      update_fields=[
+        "fecha_limite",
+        "cumplida"
+      ]
+    )
+    # Eliminamos el registro del historial
+    ultimo_registro.delete()
+    return Response({
+      "detail": "La realización de la obligación fue deshecha."
+    })
+  
 # -----------------------------------------------
 # REGISTRO
 # -----------------------------------------------

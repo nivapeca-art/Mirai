@@ -15,7 +15,6 @@ function LoginFormulario({
   return (
     <div className="formulario-container">
       <form className="formulario" onSubmit={manejoLogin}>
-
         {/* USUARIO O CORREO */}
         <div className="campos">
           <User className="campo-icono" size={20} />
@@ -69,9 +68,14 @@ function LoginFormulario({
       </form>
 
       <div className="footer">
-        <span>¿No tienes una cuenta?</span>
+        <div className="registro-footer">
+          <span>¿No tienes una cuenta?</span>
+          <Link to="/registro">Registrarme</Link>
+        </div>
 
-        <Link to="/registro">Registrarme</Link>
+        <Link to="/recuperar-password" className="enlace-recuperar">
+          ¿Olvidaste tu contraseña?
+        </Link>
       </div>
     </div>
   );

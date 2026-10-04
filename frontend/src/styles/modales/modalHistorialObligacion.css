@@ -1,0 +1,263 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 59, 82, 0.28);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+.modal-historial {
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(5, 59, 82, 0.18);
+  overflow: hidden;
+  animation: aparecerHistorial 0.2s ease-out;
+}
+@keyframes aparecerHistorial {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- CABECERA ---------- */
+.modal-historial-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px;
+  border-bottom: 1px solid #edf1f3;
+}
+.modal-historial-titulo {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.modal-historial-icono {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eaf3f6;
+  color: #053b52;
+  border-radius: 12px;
+}
+.modal-historial-titulo h2 {
+  margin: 0;
+  color: #053b52;
+  font-size: 18px;
+  font-weight: 700;
+}
+.modal-historial-titulo p {
+  margin: 3px 0 0;
+  color: #7a8991;
+  font-size: 13px;
+}
+
+/* ---------- BOTÓN DE CERRAR ---------- */
+.modal-historial-cerrar {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: #7a8991;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.modal-historial-cerrar:hover {
+  background: #f1f4f5;
+  color: #053b52;
+}
+
+/* ---------- CONTENIDO ---------- */
+.modal-historial-contenido {
+  padding: 20px 24px 24px;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+/* Scroll */
+.modal-historial-contenido::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-historial-contenido::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-historial-contenido::-webkit-scrollbar-thumb {
+  background: #d4dde1;
+  border-radius: 10px;
+}
+.modal-historial-contenido::-webkit-scrollbar-thumb:hover {
+  background: #b8c6cc;
+}
+
+/* ---------- LISTA DE HISTORIAL ---------- */
+.lista-historial {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---------- ITEM ---------- */
+.item-historial {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 15px;
+  background: #f8fafb;
+  border: 1px solid #edf1f3;
+  border-radius: 13px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+.item-historial:hover {
+  background: #f3f7f8;
+  border-color: #dce7eb;
+  transform: translateY(-1px);
+}
+
+/* ---------- CHECK ---------- */
+.historial-check {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e6f3ed;
+  color: #2f7d5a;
+}
+
+/* ---------- INFORMACIÓN ---------- */
+.historial-info {
+  flex: 1;
+  min-width: 0;
+}
+.historial-principal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.historial-principal strong {
+  color: #053b52;
+  font-size: 14px;
+  font-weight: 600;
+}
+.historial-principal span {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 20px;
+  background: #e6f3ed;
+  color: #2f7d5a;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ---------- DETALLES ---------- */
+.historial-detalles {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 5px;
+  color: #7a8991;
+  font-size: 12px;
+}
+.historial-detalles span + span {
+  position: relative;
+  padding-left: 14px;
+}
+.historial-detalles span + span::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 3px;
+  background: #aebbc1;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+/* ---------- ESTADOS ---------- */
+.historial-estado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  color: #7a8991;
+  font-size: 14px;
+}
+.historial-estado.error {
+  color: #b45353;
+}
+
+/* ---------- HISTORIAL VACIO ---------- */
+.historial-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  text-align: center;
+  color: #87959c;
+}
+.historial-vacio svg {
+  margin-bottom: 12px;
+  color: #b8c7cd;
+}
+.historial-vacio h3 {
+  margin: 0 0 6px;
+  color: #053b52;
+  font-size: 15px;
+  font-weight: 600;
+}
+.historial-vacio p {
+  max-width: 280px;
+  margin: 0;
+  color: #87959c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 600px) {
+  .modal-overlay {
+    padding: 12px;
+  }
+  .modal-historial {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+  .modal-historial-cabecera {
+    padding: 18px;
+  }
+  .modal-historial-contenido {
+    padding: 16px 18px 20px;
+  }
+  .historial-principal {
+    align-items: flex-start;
+  }
+  .historial-principal span {
+    font-size: 10px;
+  }
+}

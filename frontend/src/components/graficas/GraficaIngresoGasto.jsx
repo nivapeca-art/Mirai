@@ -79,7 +79,6 @@ function GraficaIngresosGastos({ dashboard, periodo }) {
               }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-
               <XAxis
                 dataKey="nombre"
                 tick={{
@@ -88,7 +87,6 @@ function GraficaIngresosGastos({ dashboard, periodo }) {
                 tickLine={false}
                 axisLine={false}
               />
-
               <YAxis
                 tick={{
                   fontSize: 10,
@@ -112,21 +110,21 @@ function GraficaIngresosGastos({ dashboard, periodo }) {
               <Bar
                 dataKey="ingresos"
                 name="Ingresos"
-                fill="#3f80c9"
+                fill="#2e8b57"
                 radius={[5, 5, 0, 0]}
               />
 
               <Bar
                 dataKey="gastos"
                 name="Gastos"
-                fill="#e57373"
+                fill="#c62828"
                 radius={[5, 5, 0, 0]}
               />
 
               <Bar
                 dataKey="ahorros"
                 name="Ahorros"
-                fill="#66a97b"
+                fill="#3473ba"
                 radius={[5, 5, 0, 0]}
               />
             </BarChart>
